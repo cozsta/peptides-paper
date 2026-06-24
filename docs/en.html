@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Peptides - what works, what is dangerous</title>
+<style>
+:root{
+  --bg:#fbf8f2; --bg2:#f3eee3; --fg:#23201a; --fg2:#544c3e; --mut:#8a8071;
+  --acc:#a8682a; --acc2:#c98a3e; --line:#e7ded0; --key:#fef6e6; --keyline:#e9c987;
+  --sheet:#fffdf8; --shadow:0 8px 30px rgba(60,40,10,.16);
+  --maxw:42rem;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f; --bg2:#1d1a14; --fg:#ece5d8; --fg2:#b6ac99; --mut:#8c8473;
+  --acc:#e0a85a; --acc2:#f0bd74; --line:#2e281f; --key:#221c11; --keyline:#5a4827;
+  --sheet:#1c1812; --shadow:0 10px 34px rgba(0,0,0,.5);
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:400 17.5px/1.78 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-wrap:break-word;word-break:normal;
+}
+:lang(zh) body, body:lang(zh){line-height:1.92;letter-spacing:.01em}
+
+/* ---------- progress + header ---------- */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .08s linear}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.5rem;
+  padding:max(.55rem,env(safe-area-inset-top)) .9rem .55rem;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px);
+  border-bottom:1px solid var(--line)}
+.menu-btn{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:40px;height:40px;border-radius:11px;font-size:1.15rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.menu-btn:active{transform:scale(.94)}
+.brand{flex:1 1 auto;font-weight:700;font-size:.98rem;letter-spacing:.02em;color:var(--fg);
+  text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{color:var(--mut);font-weight:500}
+.langs{display:flex;gap:.15rem;flex:0 0 auto;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:3px}
+.langs a{font-size:.8rem;font-weight:600;color:var(--fg2);text-decoration:none;
+  padding:.28rem .5rem;border-radius:8px;line-height:1}
+.langs a.on{background:var(--acc);color:#fff}
+
+/* ---------- drawer (TOC) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(20,12,0,.42);opacity:0;visibility:hidden;
+  transition:opacity .25s;z-index:55}
+.scrim.show{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(82vw,20rem);z-index:56;
+  background:var(--sheet);border-right:1px solid var(--line);box-shadow:var(--shadow);
+  transform:translateX(-102%);transition:transform .28s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto;padding:1rem 0 2rem;overscroll-behavior:contain}
+.drawer.show{transform:none}
+.drawer h2{margin:.2rem 1.1rem .6rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mut);font-weight:700;border:0;padding:0}
+#TOC ul{list-style:none;margin:0;padding:0}
+#TOC li{margin:0}
+#TOC a{display:block;padding:.6rem 1.1rem;color:var(--fg2);text-decoration:none;font-size:.94rem;
+  line-height:1.35;border-left:3px solid transparent}
+#TOC a:active{background:var(--bg2)}
+#TOC a.active{color:var(--acc);border-left-color:var(--acc);background:var(--key);font-weight:600}
+
+/* ---------- main / typography ---------- */
+main{max-width:var(--maxw);margin:0 auto;padding:1.4rem 1.15rem 5rem}
+main>h1:first-child{font-size:1.7rem;line-height:1.25;letter-spacing:-.015em;margin:.6rem 0 .4rem;font-weight:800}
+h2{font-size:1.32rem;line-height:1.3;font-weight:750;letter-spacing:-.01em;
+  margin:2.9rem 0 .7rem;padding-top:1.6rem;border-top:1px solid var(--line);scroll-margin-top:64px}
+h3{font-size:1.06rem;font-weight:700;color:var(--acc);margin:1.7rem 0 .35rem;letter-spacing:.005em;scroll-margin-top:64px}
+p{margin:.78rem 0}
+a{color:var(--acc);text-decoration:underline;text-decoration-thickness:.5px;text-underline-offset:2px}
+strong{font-weight:680;color:var(--fg)}
+em{font-style:italic;color:var(--fg2)}
+hr{border:0;border-top:1px solid var(--line);margin:2.4rem 0}
+ul,ol{padding-left:1.25rem;margin:.7rem 0}
+li{margin:.34rem 0}
+blockquote{margin:1.1rem 0;padding:.5rem 0 .5rem 1.05rem;border-left:3px solid var(--acc2);
+  color:var(--fg2);font-style:italic}
+code{background:var(--bg2);padding:.1em .38em;border-radius:6px;font-size:.9em;
+  font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* ---------- KEY callout: first paragraph after each chapter h2 ---------- */
+h2 + p{position:relative;margin:1rem 0 1.3rem;padding:1rem 1.05rem 1rem 1.05rem;
+  background:var(--key);border:1px solid var(--keyline);border-radius:14px;
+  font-size:1.02rem;line-height:1.7}
+h2 + p::before{content:"🔑";position:absolute;top:-.72rem;left:.85rem;background:var(--bg);
+  padding:0 .35rem;font-size:.95rem}
+h2 + p strong:first-child{color:var(--acc);font-weight:720}
+
+/* intro "keys up front" list (after the first hr in front matter) */
+main>ul li strong{color:var(--acc)}
+
+/* ---------- footnotes ---------- */
+.footnote-ref{text-decoration:none;font-weight:700;color:var(--acc);
+  font-size:.72em;padding:0 .12em;vertical-align:super;line-height:0}
+.footnote-ref:hover{color:var(--acc2)}
+section.footnotes,.footnotes{margin-top:3.4rem;padding-top:1.2rem;border-top:2px solid var(--line);
+  font-size:.84rem;line-height:1.6;color:var(--fg2)}
+.footnotes h2{font-size:1rem;border:0;padding:0;margin:0 0 .6rem}
+.footnotes ol{padding-left:1.3rem}
+.footnotes li{margin:.45rem 0;overflow-wrap:anywhere}
+.footnotes a{color:var(--mut)}
+
+/* ---------- footnote bottom-sheet ---------- */
+#fnsheet{position:fixed;left:0;right:0;bottom:0;z-index:70;transform:translateY(110%);
+  transition:transform .26s cubic-bezier(.22,.61,.36,1);
+  background:var(--sheet);border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;box-shadow:var(--shadow);
+  padding:1.1rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
+  max-height:60vh;overflow-y:auto}
+#fnsheet.show{transform:none}
+#fnsheet .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:-.3rem auto .7rem;cursor:pointer}
+#fnsheet .fnhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.5rem}
+#fnsheet .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.fnclose{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:36px;height:36px;border-radius:10px;font-size:1.05rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.fnclose:active{transform:scale(.92)}
+#fnsheet .body{font-size:.92rem;line-height:1.6;color:var(--fg)}
+#fnsheet .body a{color:var(--acc);word-break:break-all}
+
+/* ---------- back to top ---------- */
+.totop{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom));z-index:40;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--sheet);
+  color:var(--acc);font-size:1.25rem;cursor:pointer;box-shadow:var(--shadow);
+  opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;display:grid;place-items:center}
+.totop.show{opacity:1;visibility:visible}
+.totop:active{transform:scale(.9)}
+
+/* ---------- desktop ---------- */
+@media (min-width:1040px){
+  body{font-size:18.5px}
+  .menu-btn{display:none}
+  main{margin-left:20rem;max-width:44rem}
+  main>h1:first-child{font-size:2.1rem}
+  h2{font-size:1.5rem}
+  .drawer{transform:none;box-shadow:none;width:19rem;border-right:1px solid var(--line);
+    background:var(--bg)}
+  .drawer h2{margin-top:.6rem}
+  .scrim{display:none}
+  .topbar{padding-left:20.9rem}
+}
+@media (min-width:1040px) and (prefers-color-scheme:dark){.drawer{background:var(--bg)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="目录 / Contents">☰</button>
+  <a class="brand" href="index.html">钥匙 · KEYS <small>· Ключи</small></a>
+  <nav class="langs" id="langs">
+    <a href="zh.html" data-l="zh">中文</a>
+    <a href="en.html" data-l="en">EN</a>
+    <a href="ru.html" data-l="ru">RU</a>
+  </nav>
+</header>
+
+<aside class="drawer" id="drawer">
+  <h2>目录 · Contents</h2>
+  <nav id="TOC"><ul>
+<li><a
+href="#peptides-what-works-whats-hype-whats-dangerous-and-how-not-to-get-poisoned-on-the-gray-market"
+id="toc-peptides-what-works-whats-hype-whats-dangerous-and-how-not-to-get-poisoned-on-the-gray-market">Peptides:
+what works, what’s hype, what’s dangerous — and how not to get poisoned
+on the gray market</a>
+<ul>
+<li><a href="#the-key-points-up-front-if-you-only-read-this"
+id="toc-the-key-points-up-front-if-you-only-read-this">The key points up
+front (if you only read this)</a></li>
+<li><a href="#what-peptides-actually-are"
+id="toc-what-peptides-actually-are">1. What peptides actually
+are</a></li>
+<li><a
+href="#what-the-fda-has-actually-approved-and-what-it-hasnt-as-of-2026"
+id="toc-what-the-fda-has-actually-approved-and-what-it-hasnt-as-of-2026">2.
+What the FDA has actually approved, and what it hasn’t (as of
+2026)</a></li>
+<li><a href="#by-class-mechanism-dose-benefits-risks"
+id="toc-by-class-mechanism-dose-benefits-risks">3. By class — mechanism,
+dose, benefits, risks</a></li>
+<li><a
+href="#the-chinese-market-how-it-actually-works-most-useful-if-youre-buying"
+id="toc-the-chinese-market-how-it-actually-works-most-useful-if-youre-buying">4.
+The Chinese market — how it actually works (most useful if you’re
+buying)</a></li>
+<li><a href="#toxicity-and-long-term-effects-by-risk-vector"
+id="toc-toxicity-and-long-term-effects-by-risk-vector">5. Toxicity and
+long-term effects — by risk vector</a></li>
+<li><a href="#six-popular-claims-fact-checked"
+id="toc-six-popular-claims-fact-checked">6. Six popular claims —
+fact-checked</a></li>
+<li><a href="#bottom-line-whats-actually-worth-it-for-whom"
+id="toc-bottom-line-whats-actually-worth-it-for-whom">7. Bottom line:
+what’s actually worth it for whom</a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<main>
+<h1
+id="peptides-what-works-whats-hype-whats-dangerous-and-how-not-to-get-poisoned-on-the-gray-market">Peptides:
+what works, what’s hype, what’s dangerous — and how not to get poisoned
+on the gray market</h1>
+<p><em>A research overview (2026). This is not medical advice — it’s a
+map of the territory: what’s approved, what’s actually proven, what’s
+myth, and how the market that ships all of this actually works. After
+reading, everyone makes their own decisions with their own
+doctor.</em></p>
+<hr />
+<h2 id="the-key-points-up-front-if-you-only-read-this">The key points up
+front (if you only read this)</h2>
+<ol type="1">
+<li><strong>The gray peptide market is ~90% hype built on ~10% real
+medicine.</strong> The real medicine is mostly GLP-1 (Ozempic and its
+relatives) and a handful of approved drugs. Everything else is sold as
+“research chemical, not for human use” — that is a <strong>legal
+loophole, not a quality mark</strong>.</li>
+<li><strong>A peptide is a tool for a specific problem</strong>, not a
+“stack to become better.” If there’s a problem (obesity, a non-healing
+injury, low libido, visceral fat) → there’s a peptide for it. No problem
+→ nearly everything falls into the “not needed” column.</li>
+<li><strong>The main risk is not the molecule — it’s the
+PRODUCT.</strong> The exotic fears (cancer from a peptide) are almost
+all theoretical and based on rodent studies. But endotoxin fever,
+abscesses from non-sterile injections, and heavy metals in vials are
+measurable, human, and documented. On the gray market, the dirt in the
+vial will get you before the peptide itself does.</li>
+</ol>
+<hr />
+<h2 id="what-peptides-actually-are">1. What peptides actually are</h2>
+<p>A peptide is a short chain of amino acids (2–50 of them) — something
+between an “amino acid” and a “protein.” Biologically these are
+<strong>signaling molecules</strong>: they mimic hormones or growth
+factors and trigger a specific receptor in the body.</p>
+<ul>
+<li><strong>Injectable</strong> (the majority) — peptide bonds break
+down in the stomach, so they’re injected subcutaneously (SC) or
+intramuscularly (IM).</li>
+<li><strong>Oral</strong> (rare exceptions) — resistant to digestion:
+MK-677 (not actually a peptide), KPV (absorbed via the PepT1
+transporter), BPC-157 (gastro-stable locally in the gut).</li>
+</ul>
+<p>Why there’s a gray market around them: ~90% of peptides interesting
+to biohackers <strong>are not approved by any regulator</strong> for any
+recognized medical condition. They’re sold under the label “research /
+not for human use.” Almost all “research-grade” batches are synthesized
+at ~3–4 factories in China, and Western “brands” simply repackage the
+same powder.</p>
+<hr />
+<h2
+id="what-the-fda-has-actually-approved-and-what-it-hasnt-as-of-2026">2.
+What the FDA has actually approved, and what it hasn’t (as of 2026)</h2>
+<h3 id="real-drugs-human-clinical-trials-exist-approval-granted">Real
+drugs (human clinical trials exist, approval granted)</h3>
+<div class="line-block">Drug | Class | Approved for |</div>
+<p>|—|—|—| | <strong>Semaglutide</strong> (Ozempic / Wegovy, oral form
+since Dec-2025) | GLP-1 agonist | type 2 diabetes (2017), obesity (2021)
+| | <strong>Tirzepatide</strong> (Mounjaro / Zepbound) | GLP-1 + GIP |
+diabetes (2022), obesity (2023), sleep apnea (2024) | |
+<strong>Liraglutide</strong> | GLP-1 | outdated, weaker than newer
+options | | <strong>Orforglipron</strong> | oral GLP-1 (not a peptide) |
+obesity (Apr-2026), more convenient than injections, but weaker | |
+<strong>Tesamorelin</strong> (Egrifta) | GHRH analogue | <strong>the
+only drug with direct evidence against visceral fat</strong> (in HIV
+lipodystrophy) | | <strong>Bremelanotide</strong> (Vyleesi / PT-141) |
+melanocortin | female hypoactive sexual desire disorder (male —
+off-label) | | <strong>Setmelanotide</strong> | MC4R | rare genetic
+obesity | | <strong>SS-31 / Elamipretide</strong> | mitochondrial | rare
+Barth syndrome (notably failed its primary endpoint in the trial) |</p>
+<h3 id="research-gray-not-approved-sold-as-for-research-use">Research /
+gray — NOT approved (sold as “for research use”)</h3>
+<p>BPC-157, TB-500, GHK-Cu, KPV, ipamorelin, CJC-1295, sermorelin,
+GHRP-2/6, hexarelin, <strong>MK-677</strong>, MOTS-c, humanin,
+<strong>5-Amino-1MQ</strong>, epitalon, thymalin, thymosin-α1, ARA-290,
+<strong>melanotan I/II</strong>, PT-141 (gray vials), Semax, Selank,
+<strong>Dihexa</strong>, and ~200 more compounds.</p>
+<h3
+id="the-trap-of-they-were-approved-again-important-this-is-how-sellers-lie">The
+trap of “they were approved again” (important — this is how sellers
+lie)</h3>
+<ul>
+<li><strong>Late 2023:</strong> The FDA moved ~19 popular peptides
+(BPC-157, TB-500, GHK-Cu, KPV…) to “Category 2” — significant risks
+(impurities, immunogenicity, no data). Legal compounding pharmacy
+production in the US came to a halt.</li>
+<li><strong>February 2026:</strong> an <em>intention</em> was announced
+to return ~14 of the 19 to Category 1. But Melanotan II, GHRP-2/6, and
+others <strong>remain restricted</strong>.</li>
+<li><strong>April 2026:</strong> they were formally removed from
+Category 2 — <strong>because the applications were withdrawn, not
+because the FDA confirmed safety</strong>.</li>
+<li><strong>The bottom line:</strong> “removed from Cat. 2” ≠ “legal to
+compound.” That requires a separate procedure that, as of mid-2026,
+<strong>had not happened</strong>. So any advertisement claiming “FDA
+approved / legal again” is <strong>a lie</strong>.</li>
+<li><strong>GLP-1 separately:</strong> legal compounding of cheap
+Ozempic copies in the US <strong>is dead</strong> (the shortage is over,
+courts dismissed the challenges, the FDA is moving toward a permanent
+ban on copies — reason cited: 455+ reports of harm from dosing errors).
+What’s left is either a brand-name prescription or the gray market.</li>
+</ul>
+<hr />
+<h2 id="by-class-mechanism-dose-benefits-risks">3. By class — mechanism,
+dose, benefits, risks</h2>
+<h3 id="brain-nootropics-neuro">🧠 Brain (nootropics / neuro)</h3>
+<p>The honest truth: effects on a healthy brain are subtle; the best
+data is for recovery after injury (stroke, trauma), and much of it comes
+from Russian clinical research without Western double-blind trials.</p>
+<ul>
+<li><strong>Semax</strong> (+ N-acetyl variants) — focus, memory,
+neuroprotection. Raises BDNF/NGF + dopamine, not a stimulant.
+<strong>Intranasal</strong>, 200–600 mcg/day. Targets: hippocampus,
+prefrontal cortex. Russian clinical background (approved there for
+stroke/cognition), almost no Western RCTs. <strong>🟡 The best “clean
+focus” option with at least some clinical history.</strong></li>
+<li><strong>Selank</strong> (+ amidate) — anxiety relief/calm focus
+without sedation. BDNF + GABA/enkephalins. Intranasal 250–900 mcg/day.
+<strong>🟡 The Semax+Selank combination is the most sensible entry point
+into neuropeptides.</strong></li>
+<li><strong>Bromantane</strong> (not a peptide) — calm energy +
+anti-fatigue. Raises dopamine <em>synthesis</em> (no rebound/crash).
+Oral 50–100 mg. <strong>🟢/🟡 Underrated.</strong></li>
+<li><strong>Noopept</strong> — memory/focus, BDNF, AMPA modulation. Oral
+10–30 mg (with choline, otherwise headaches). Effect is subtle.
+<strong>🟡 Cheap, oral, low risk.</strong></li>
+<li><strong>Cerebrolysin / Cortexin</strong> — neuroregeneration
+(stroke/TBI/dementia), a mixture of neurotrophins. Injected in courses
+IM/IV, painful, animal-derived source. <strong>Real trials for
+pathological conditions</strong>, not for healthy people. <strong>🟡 for
+recovery · ⚪ to “get smarter”.</strong></li>
+<li><strong>Dihexa</strong> — extremely potent synaptogenesis (HGF/c-Met
+pathway agonist). ⚠️ This is a <strong>proliferative, potentially
+pro-carcinogenic pathway</strong> + zero human data. <strong>🟡/🔴 Risky
+experiment.</strong></li>
+<li><strong>P21 / PE-22-28 / NAP</strong> — neurogenesis/antidepressant.
+Rodents only (NAP failed its human trial). <strong>⚪
+Speculative.</strong></li>
+<li><strong>DSIP</strong> — sleep, weak data <strong>🟡</strong>.
+<strong>Methylene blue</strong> — brain mitochondria, ⚠️ dangerous
+interaction with antidepressants (serotonin syndrome)
+<strong>🟡</strong>. <strong>Phenibut</strong> — this is not a
+nootropic, it’s a GABA agonist with <strong>addiction potential and
+severe withdrawal</strong> <strong>🔴</strong>.</li>
+</ul>
+<h3 id="muscle-recovery-growth-hormone">💪 Muscle / recovery / growth
+hormone</h3>
+<ul>
+<li><strong>HGH (somatropin) and secretagogues</strong> (ipamorelin,
+CJC-1295, sermorelin, GHRP-2/6, hexarelin, MK-677). All ultimately raise
+growth hormone → IGF-1.
+<ul>
+<li><strong>Ipamorelin</strong> — the “cleanest” (no cortisol,
+prolactin, or hunger spike).</li>
+<li><strong>GHRP-6</strong> = intense hunger; <strong>GHRP-2</strong> =
+cortisol+prolactin up; <strong>hexarelin</strong> = most cortisol +
+rapid tolerance.</li>
+<li><strong>MK-677</strong> (oral) — raises GH/IGF-1, but in a 2-year
+trial (Nass 2008) <strong>failed everything that mattered</strong>: no
+strength improvement, no visceral fat reduction, plus increased water
+retention, elevated glucose and cortisol, and worse insulin sensitivity.
+Water retention and “puffy face” come from this.</li>
+<li><strong>Honest verdict on the class:</strong> secretagogues exist to
+<strong>restore</strong> growth hormone in deficient and aging
+individuals. In a healthy young person they push IGF-1 up (see longevity
+— debatable), and <strong>none of them raise testosterone</strong>.</li>
+</ul></li>
+<li><strong>BPC-157</strong> — pro-angiogenesis, ligament/gut repair.
+Data: rodents for everything “sport-related” + 1 retrospective on 12
+patients (no control) + a pilot on 2 people. More sensible taken orally
+for GI problems. <strong>🟡 for a specific injury or gut
+issue.</strong></li>
+<li><strong>TB-500</strong> — cell migration, healing. Rodents only
+(human RCT data exists only for corneal healing).
+<strong>⚪/🟡.</strong></li>
+<li><strong>GHK-Cu</strong> — copper peptide. <strong>Topically
+(cream)</strong> — genuinely works on skin/collagen, controlled trials
+exist. Injectable/systemic — zero data. <strong>🟡 as a
+cosmetic.</strong></li>
+<li><strong>Follistatin / ACE-031 / myostatin blockers</strong> —
+theoretically more muscle, but <strong>serious risks</strong> (bleeding
+with ACE-031 in trials). <strong>🔴 for a recreational
+user.</strong></li>
+</ul>
+<h3 id="fat-metabolism">🔥 Fat / metabolism</h3>
+<ul>
+<li><strong>GLP-1 (semaglutide, tirzepatide, retatrutide, and
+newer)</strong> — <strong>this is the category that actually works,
+powerfully, with a massive evidence base.</strong> If someone asks “do
+peptides even work?” — here’s proof they do. For someone with excess
+weight, these are life-changing.
+<ul>
+<li>⚠️ Key caveat: <strong>25–30% of weight lost is muscle</strong>, not
+just fat. Without strength training + protein you lose body quality too.
+Plus GI side effects, and weight rebounds after stopping.</li>
+</ul></li>
+<li><strong>Tesamorelin</strong> — the only one with
+<strong>proven</strong> selective reduction of visceral fat (−15–19%,
+body weight unchanged). But: data only in HIV patients, ~30% don’t
+respond, the effect <strong>reverses within 3–6 months</strong> after
+stopping, and IGF-1 rises +81%.</li>
+<li><strong>SLU-PP-332, 5-Amino-1MQ, MOTS-c</strong> — “exercise
+mimetics,” theoretically burn fat/fix metabolism. <strong>Rodents only,
+zero human data.</strong> Beautiful mechanisms, safety — completely
+unknown. <strong>⚪ Speculative experiment, not a bet.</strong></li>
+</ul>
+<h3 id="longevity-mitochondria">⏳ Longevity / mitochondria</h3>
+<ul>
+<li><strong>NAD+ / NMN / NR</strong> — trendy, “energy and youth.”
+Reality: oral forms are cheap and give the same (un)proven effect as
+expensive IV drips. <strong>⚪ IV NAD+ drips = mostly expensive placebo
+theater.</strong></li>
+<li><strong>Epitalon, thymalin, Khavinson peptide bioregulators</strong>
+— Russian gerontology, <strong>all literature from one group, not
+reproduced in the West</strong>. Hype &gt;&gt; data.
+<strong>⚪.</strong></li>
+<li><strong>Thymosin-α1, SS-31, rapamycin, senolytics
+(fisetin/quercetin)</strong> — real data exists, but <strong>for sick
+people</strong> (hepatitis, sepsis, specific diseases), not for healthy
+people seeking “life extension.”</li>
+</ul>
+<h3 id="sex-libido-cosmetics">❤️ Sex / libido / cosmetics</h3>
+<ul>
+<li><strong>PT-141 (Bremelanotide)</strong> — <strong>the best
+evidence-backed option for libido.</strong> Works through the brain (not
+blood vessels like Viagra). Dose 1.75 mg subcutaneous ~45 min before,
+<strong>episodically</strong>. Side effects: nausea (~40%), blood
+pressure spike + heart rate decrease for ~12 h (contraindicated with
+hypertension), with frequent use — possible <strong>lasting pigmentation
+of the face/gums</strong>. Limit ~8 doses/month. <strong>🟡 for sex, on
+occasion.</strong></li>
+<li><strong>Melanotan II</strong> — for tanning and libido. <strong>🔴
+AVOID.</strong> Documented cases include: melanoma, flare-ups of
+atypical moles, darkening of existing moles, priapism, muscle breakdown
++ kidney failure, renal infarction, neurological PRES syndrome. Banned
+in Australia as of Feb-2026 as a drug of abuse (Schedule 9, same as
+heroin). Especially dangerous for people with high sun exposure.</li>
+<li><strong>GHK-Cu, Argireline, Matrixyl, and other cosmetic
+peptides</strong> — topically they gently work on skin/wrinkles, low
+risk. <strong>🟡 fine as a cream.</strong></li>
+</ul>
+<hr />
+<h2
+id="the-chinese-market-how-it-actually-works-most-useful-if-youre-buying">4.
+The Chinese market — how it actually works (most useful if you’re
+buying)</h2>
+<p><strong>China produces ~68% of the world’s raw peptide
+material.</strong> Concentrated in: Jiangsu province (~35%, factories GL
+Biochem, ChinaPeptides), Zhejiang (~25%), Shandong (~20%, cheap/bulk).
+US imports of peptides from China doubled in 2025 to ~$328M.
+<strong>Almost every “American” brand is repackaged Chinese raw
+material.</strong></p>
+<h3 id="why-impurities-are-inevitable">Why impurities are
+INEVITABLE</h3>
+<p>Peptides are assembled by SPPS — amino acids are attached one at a
+time. At each step, some chains come out defective: missed residues,
+truncated chains, mirror-image isomers. These “fragments” are
+<strong>structurally nearly identical to the target molecule</strong>,
+so cheap purification doesn’t remove them. That’s what’s really behind
+the “99% purity” label.</p>
+<h3 id="three-quality-tiers">Three quality tiers</h3>
+<ul>
+<li><strong>GMP pharma (~25–30%)</strong> — cleanrooms, full QC. Almost
+impossible to buy directly.</li>
+<li><strong>Research grade (~40–45%)</strong> — HPLC on most batches,
+endotoxin testing is occasional. Most of the decent raw material.</li>
+<li><strong>Cheap tier (~25–35%)</strong> — minimal QC, <strong>template
+certificates</strong>. Contamination and underdosing live here.</li>
+</ul>
+<h3
+id="the-certificate-of-analysis-coa-the-most-forged-document-on-the-market">The
+Certificate of Analysis (COA) — the most forged document on the
+market</h3>
+<p><strong>~43% of peptides tested by the Janoshik lab in 2024 did not
+meet their claimed purity.</strong> Typical fraud: - identical numbers
+across “different” batches; - suspiciously round figures (exactly
+99.0%); - reused batch numbers; - PDFs regenerated with a new seller’s
+name; - old results passed off as the current product.</p>
+<h3 id="what-even-an-honest-coa-doesnt-cover">What even an honest COA
+doesn’t cover</h3>
+<ul>
+<li><strong>Endotoxin (LPS)</strong> — bacterial debris that survives
+sterilization, causes fever/sepsis when injected. A vial can be
+<strong>sterile and endotoxin-contaminated at the same time</strong>.
+Requires a separate test (LAL).</li>
+<li><strong>Sterility</strong> — live bacteria/fungi → abscesses
+(documented Mycobacterium cases exist).</li>
+<li><strong>Heavy metals</strong> — invisible to standard tests. Belgian
+forensic analysis: ~26% of seized injectables had arsenic/lead above
+safety limits (arsenic up to ×10 over limit).</li>
+<li><strong>Solvents (TFA and industrial chemicals)</strong> — toxic
+synthesis residues that purity percentage doesn’t capture.</li>
+<li><strong>Actual mg in the vial</strong> — purity is a
+<strong>percentage, not a quantity</strong>. A vial can be 99% pure and
+contain 3 mg instead of the stated 10 (underdosing / “fronting”). In a
+dataset of 590 BPC-157 samples, dosing variance reached ±85%, with
+outright molecular substitution occurring.</li>
+</ul>
+<h3 id="how-experienced-people-verify">How experienced people
+verify</h3>
+<p>The standard is the independent lab <strong>Janoshik
+(Slovakia)</strong>. The discipline: send an <strong>anonymous sample
+directly</strong>, the seller doesn’t see the result in advance, the
+result goes into a <strong>public database</strong> (the seller can’t
+edit it). The tests are DIFFERENT — order the right ones: -
+<strong>HPLC</strong> → purity (%) - <strong>Mass spec</strong> → is
+this even the right molecule (catches substitution) -
+<strong>Quantification / “ID and amount”</strong> → actual mg (catches
+underdosing — <strong>the test everyone forgets</strong>) -
+<strong>Sterility + Endotoxin (LAL)</strong> → injection safety Prices:
+HPLC ~€80–150, full panel ~$660 per vial.</p>
+<h3 id="storage-and-reconstitution">Storage and reconstitution</h3>
+<p>Dry powder (lyophilized) — one to two years in the refrigerator.
+Reconstitute with <strong>bacteriostatic water</strong> (contains benzyl
+alcohol — inhibits bacteria during repeated needle penetration), drip
+down the side of the vial, swirl don’t shake, store at +2–8 °C for
+~28–30 days. <strong>Reconstitution does NOT sterilize
+already-contaminated powder.</strong></p>
+<h3 id="typical-scams">Typical scams</h3>
+<p>Underdosing at full price; wrong molecule; dummy/degraded product;
+photoshopped certificate; non-existent laboratories; the “we’ll reship
+for free if seized” game (sometimes honest, sometimes a way to take
+money for a package that was never sent).</p>
+<h3
+id="practical-framework-for-dont-get-poisoned-and-dont-get-ripped-off">Practical
+framework for “don’t get poisoned and don’t get ripped off”</h3>
+<ol type="1">
+<li>Every vial is <strong>guilty until proven innocent</strong> by an
+anonymous test.</li>
+<li>For everything: <strong>MS (is it the right thing) + HPLC (purity) +
+Quantification (how many mg)</strong>.</li>
+<li>For injectables add <strong>Endotoxin + Sterility</strong>.</li>
+<li>Anonymous sample → Janoshik → check the public database.</li>
+<li>Clean aseptic technique on reconstitution.</li>
+<li><strong>If you’re not experienced with injections — the
+sterility/technique will harm you before the peptide does.</strong></li>
+</ol>
+<hr />
+<h2 id="toxicity-and-long-term-effects-by-risk-vector">5. Toxicity and
+long-term effects — by risk vector</h2>
+<p><strong>Counterintuitively: the product is more dangerous than the
+molecule.</strong></p>
+<p><strong>Vector 1 — the molecule itself (mostly theoretical):</strong>
+- <em>Immunogenicity</em> — more often from impurities than from the
+peptide itself (which is exactly what the FDA cited when placing
+peptides in Cat. 2). - <em>IGF-1 → cancer — MYTH in the form people fear
+it.</em> Epidemiology is weak and organ-dependent. The strongest signal
+is in acromegaly patients (extreme growth hormone for years) — that is
+<strong>not the relevant model</strong>. The cleanest human analogue is
+adult growth hormone replacement therapy: cancer <strong>−31%
+(protective effect)</strong>, not increased. The real, narrow caveat:
+<strong>do not use if you have active or recent cancer</strong> (IGF-1
+may feed an already-existing tumor). - <em>GLP-1 → thyroid cancer —
+MYTH.</em> The black box warning comes from rodents (human C-cells have
+few of these receptors). A cohort of 145,000 people: no elevated risk.
+The caveat applies only to people with hereditary thyroid cancer (MEN2).
+- <em>GLP-1 → muscle loss — REAL.</em> The most genuine downside. -
+<em>Melanotan II → melanoma</em> — real human cases documented.</p>
+<p><strong>Vector 2 — the product (THE larger real risk):</strong>
+online semaglutide labeled “99%” tested at 7.7–14.4% actual content
+(Venhuis 2024), every vial endotoxin-positive. Seized product found with
+solvents, arsenic/lead, glass/rubber particles. Non-sterile
+reconstitution → abscess. <strong>The cancer theories are 5–20 years out
+and in rodents. Endotoxin fever, abscesses, and heavy metals are this
+week and measurable.</strong></p>
+<p><strong>Vector 3 — unknown unknowns:</strong> for BPC-157, TB-500,
+CJC, ipamorelin, melanotan, MK-677 — <strong>zero long-term human
+trials.</strong> Even for approved tesamorelin — only 52 weeks of data.
+<strong>“Safe” here means “no data,” not “proven safe.”</strong></p>
+<hr />
+<h2 id="six-popular-claims-fact-checked">6. Six popular claims —
+fact-checked</h2>
+<div class="line-block">Claim | Verdict | Why |</div>
+<p>|—|—|—| | BPC-157 is FDA approved / proven safe in humans |
+<strong>REFUTED</strong> | Not approved, Cat. 2 (2023); virtually no
+human data | | Growth hormone secretagogues meaningfully raise cancer
+risk in healthy people via IGF-1 | <strong>REFUTED</strong> | Link is
+weak; acromegaly is the wrong model; GH replacement therapy is even
+protective. Caveat: avoid with active cancer | | A Chinese vial with a
+certificate = reliably 98–99% purity and dose | <strong>REFUTED</strong>
+| COA is the most forged document; ~43% failure rate; dosing variance up
+to ±85% | | Tesamorelin reliably removes visceral fat |
+<strong>MIXED</strong> | Selectivity — yes; “reliably” — no (~30%
+non-responders, data only in HIV, reversal after stopping) | | GLP-1
+carries a meaningful real-world risk of thyroid cancer |
+<strong>REFUTED</strong> | Warning based on rodents; human cohort
+studies — no elevated risk | | Melanotan II is safe for tanning/libido |
+<strong>REFUTED</strong> | Approved nowhere; melanoma, muscle breakdown,
+priapism, PRES; banned as a drug of abuse in Australia |</p>
+<hr />
+<h2 id="bottom-line-whats-actually-worth-it-for-whom">7. Bottom line:
+what’s actually worth it for whom</h2>
+<p>Peptides are justified in three situations, not as a “button to
+become better”: 1. <strong>You have a specific deficiency or
+condition</strong> — obesity → GLP-1; visceral fat → tesamorelin; a
+non-healing injury → BPC/TB-500; low libido → PT-141; aging skin →
+GHK-Cu cream. 2. <strong>You’re a competitive athlete accepting
+conscious risk</strong> (growth hormone / IGF) — a professional’s game,
+not a health move. 3. <strong>You’re an experimenter doing it for the
+process</strong> — and then you test every vial.</p>
+<p><strong>What actually works (no fluff):</strong> GLP-1 (for excess
+weight) · Tesamorelin (visceral fat) · PT-141 (libido) · GHK-Cu cream
+(skin, ~zero risk) · BPC/TB-500 (a specific injury, if the raw material
+is clean).</p>
+<p><strong>Hype / not worth the money:</strong> MOTS-c, 5-Amino-1MQ,
+SLU-PP-332 (zero human data) · epitalon, thymalin, bioregulators · IV
+NAD+ drips · most “T-boosters” and “longevity stacks.”</p>
+<p><strong>Dangerous:</strong> Melanotan I/II (melanoma, especially with
+sun exposure) · myostatin blockers for recreational users · growth
+hormone “for a healthy person” (pushes IGF-1 up, doesn’t build more
+muscle than training does, doesn’t raise testosterone).</p>
+<p><strong>If you’re healthy with no specific problem — you probably
+don’t need peptides.</strong> The basics (sleep, training, protein, not
+smoking) do more than a shelf full of vials. And if you decide to try —
+<strong>the main risk is not the molecule, it’s the dirt in the
+vial</strong>: anonymous testing at Janoshik + sterile technique saves
+you more than any choice of “trendy” peptide.</p>
+<hr />
+<p><em>Based on: FDA/PCAC documents, ClinicalTrials, Falutz NEJM 2007
+(tesamorelin), Nass Ann Intern Med 2008 (MK-677), Nordic cohort BMJ 2024
+(GLP-1/thyroid), Vilsbøll DOM 2026, Venhuis JMIR 2024 (gray-market
+semaglutide analysis), Janoshik public database, TGA 2026 (Melanotan
+ban), DermNetNZ. Not medical advice — consult a doctor before
+use.</em></p>
+</main>
+
+<button class="totop" id="toTop" aria-label="Back to top">↑</button>
+
+<div id="fnsheet" role="dialog" aria-label="reference" aria-modal="true">
+  <div class="grip" id="fngrip"></div>
+  <div class="fnhead">
+    <div class="lbl" id="fnlbl">Reference</div>
+    <button class="fnclose" id="fnClose" aria-label="Close">✕</button>
+  </div>
+  <div class="body" id="fnbody"></div>
+</div>
+
+<script>
+(function(){
+  var drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),
+      menuBtn=document.getElementById('menuBtn'),toTop=document.getElementById('toTop'),
+      progress=document.getElementById('progress'),sheet=document.getElementById('fnsheet'),
+      fnbody=document.getElementById('fnbody'),fnlbl=document.getElementById('fnlbl'),
+      fnClose=document.getElementById('fnClose'),fngrip=document.getElementById('fngrip');
+  function openD(){if(drawer){drawer.classList.add('show');scrim.classList.add('show');}}
+  function closeD(){if(drawer){drawer.classList.remove('show');scrim.classList.remove('show');}}
+  if(menuBtn)menuBtn.onclick=openD; if(scrim)scrim.onclick=function(){closeD();closeSheet();};
+
+  // mark active language tab
+  var page=(location.pathname.split('/').pop()||'zh.html').replace('.html','')||'zh';
+  document.querySelectorAll('#langs a').forEach(function(a){if(a.dataset.l===page)a.classList.add('on');});
+
+  // TOC: close drawer on click (mobile)
+  if(drawer)drawer.addEventListener('click',function(e){if(e.target.tagName==='A'&&window.innerWidth<1040)closeD();});
+
+  // scroll progress + back-to-top + active toc
+  var heads=[].slice.call(document.querySelectorAll('main h2'));
+  var tocLinks=[].slice.call(document.querySelectorAll('#TOC a'));
+  function onScroll(){
+    var h=document.documentElement,st=h.scrollTop||document.body.scrollTop,
+        sh=(h.scrollHeight-h.clientHeight)||1;
+    progress.style.width=(st/sh*100)+'%';
+    toTop.classList.toggle('show',st>600);
+    // active section
+    var cur=null;
+    for(var i=0;i<heads.length;i++){if(heads[i].getBoundingClientRect().top<120)cur=heads[i];}
+    if(cur){var id=cur.id;tocLinks.forEach(function(a){
+      a.classList.toggle('active',a.getAttribute('href')==='#'+id);});}
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  toTop.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});};
+
+  // footnote bottom-sheet
+  function openSheet(){sheet.classList.add('show');if(scrim)scrim.classList.add('show');}
+  function closeSheet(){sheet.classList.remove('show');
+    if(scrim&&(!drawer||!drawer.classList.contains('show')))scrim.classList.remove('show');}
+  document.querySelectorAll('a.footnote-ref').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var id=a.getAttribute('href');if(!id||id[0]!=='#')return;
+      var li=document.querySelector(id);if(!li)return;
+      e.preventDefault();e.stopPropagation();
+      fnbody.innerHTML=li.innerHTML.replace(/<a[^>]*class="footnote-back"[^>]*>[\s\S]*?<\/a>/g,'');
+      if(fnlbl)fnlbl.textContent='Reference · '+id.replace('#fn','');
+      openSheet();
+    });
+  });
+  if(fnClose)fnClose.onclick=closeSheet;
+  if(fngrip)fngrip.onclick=closeSheet;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+  // outside-click closes (desktop, where scrim is hidden; opening tap is stopPropagation'd)
+  document.addEventListener('click',function(e){
+    if(!sheet.classList.contains('show'))return;
+    if(sheet.contains(e.target))return;
+    if(e.target.closest&&e.target.closest('a.footnote-ref'))return;
+    closeSheet();
+  });
+  // swipe-down to close sheet
+  var sy=0;sheet.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;},{passive:true});
+  sheet.addEventListener('touchmove',function(e){if(e.touches[0].clientY-sy>60)closeSheet();},{passive:true});
+})();
+</script>
+</body>
+</html>

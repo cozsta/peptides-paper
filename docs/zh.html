@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>肽类指南 · 什么有效，什么危险</title>
+<style>
+:root{
+  --bg:#fbf8f2; --bg2:#f3eee3; --fg:#23201a; --fg2:#544c3e; --mut:#8a8071;
+  --acc:#a8682a; --acc2:#c98a3e; --line:#e7ded0; --key:#fef6e6; --keyline:#e9c987;
+  --sheet:#fffdf8; --shadow:0 8px 30px rgba(60,40,10,.16);
+  --maxw:42rem;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f; --bg2:#1d1a14; --fg:#ece5d8; --fg2:#b6ac99; --mut:#8c8473;
+  --acc:#e0a85a; --acc2:#f0bd74; --line:#2e281f; --key:#221c11; --keyline:#5a4827;
+  --sheet:#1c1812; --shadow:0 10px 34px rgba(0,0,0,.5);
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:400 17.5px/1.78 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-wrap:break-word;word-break:normal;
+}
+:lang(zh) body, body:lang(zh){line-height:1.92;letter-spacing:.01em}
+
+/* ---------- progress + header ---------- */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .08s linear}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.5rem;
+  padding:max(.55rem,env(safe-area-inset-top)) .9rem .55rem;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px);
+  border-bottom:1px solid var(--line)}
+.menu-btn{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:40px;height:40px;border-radius:11px;font-size:1.15rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.menu-btn:active{transform:scale(.94)}
+.brand{flex:1 1 auto;font-weight:700;font-size:.98rem;letter-spacing:.02em;color:var(--fg);
+  text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{color:var(--mut);font-weight:500}
+.langs{display:flex;gap:.15rem;flex:0 0 auto;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:3px}
+.langs a{font-size:.8rem;font-weight:600;color:var(--fg2);text-decoration:none;
+  padding:.28rem .5rem;border-radius:8px;line-height:1}
+.langs a.on{background:var(--acc);color:#fff}
+
+/* ---------- drawer (TOC) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(20,12,0,.42);opacity:0;visibility:hidden;
+  transition:opacity .25s;z-index:55}
+.scrim.show{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(82vw,20rem);z-index:56;
+  background:var(--sheet);border-right:1px solid var(--line);box-shadow:var(--shadow);
+  transform:translateX(-102%);transition:transform .28s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto;padding:1rem 0 2rem;overscroll-behavior:contain}
+.drawer.show{transform:none}
+.drawer h2{margin:.2rem 1.1rem .6rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mut);font-weight:700;border:0;padding:0}
+#TOC ul{list-style:none;margin:0;padding:0}
+#TOC li{margin:0}
+#TOC a{display:block;padding:.6rem 1.1rem;color:var(--fg2);text-decoration:none;font-size:.94rem;
+  line-height:1.35;border-left:3px solid transparent}
+#TOC a:active{background:var(--bg2)}
+#TOC a.active{color:var(--acc);border-left-color:var(--acc);background:var(--key);font-weight:600}
+
+/* ---------- main / typography ---------- */
+main{max-width:var(--maxw);margin:0 auto;padding:1.4rem 1.15rem 5rem}
+main>h1:first-child{font-size:1.7rem;line-height:1.25;letter-spacing:-.015em;margin:.6rem 0 .4rem;font-weight:800}
+h2{font-size:1.32rem;line-height:1.3;font-weight:750;letter-spacing:-.01em;
+  margin:2.9rem 0 .7rem;padding-top:1.6rem;border-top:1px solid var(--line);scroll-margin-top:64px}
+h3{font-size:1.06rem;font-weight:700;color:var(--acc);margin:1.7rem 0 .35rem;letter-spacing:.005em;scroll-margin-top:64px}
+p{margin:.78rem 0}
+a{color:var(--acc);text-decoration:underline;text-decoration-thickness:.5px;text-underline-offset:2px}
+strong{font-weight:680;color:var(--fg)}
+em{font-style:italic;color:var(--fg2)}
+hr{border:0;border-top:1px solid var(--line);margin:2.4rem 0}
+ul,ol{padding-left:1.25rem;margin:.7rem 0}
+li{margin:.34rem 0}
+blockquote{margin:1.1rem 0;padding:.5rem 0 .5rem 1.05rem;border-left:3px solid var(--acc2);
+  color:var(--fg2);font-style:italic}
+code{background:var(--bg2);padding:.1em .38em;border-radius:6px;font-size:.9em;
+  font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* ---------- KEY callout: first paragraph after each chapter h2 ---------- */
+h2 + p{position:relative;margin:1rem 0 1.3rem;padding:1rem 1.05rem 1rem 1.05rem;
+  background:var(--key);border:1px solid var(--keyline);border-radius:14px;
+  font-size:1.02rem;line-height:1.7}
+h2 + p::before{content:"🔑";position:absolute;top:-.72rem;left:.85rem;background:var(--bg);
+  padding:0 .35rem;font-size:.95rem}
+h2 + p strong:first-child{color:var(--acc);font-weight:720}
+
+/* intro "keys up front" list (after the first hr in front matter) */
+main>ul li strong{color:var(--acc)}
+
+/* ---------- footnotes ---------- */
+.footnote-ref{text-decoration:none;font-weight:700;color:var(--acc);
+  font-size:.72em;padding:0 .12em;vertical-align:super;line-height:0}
+.footnote-ref:hover{color:var(--acc2)}
+section.footnotes,.footnotes{margin-top:3.4rem;padding-top:1.2rem;border-top:2px solid var(--line);
+  font-size:.84rem;line-height:1.6;color:var(--fg2)}
+.footnotes h2{font-size:1rem;border:0;padding:0;margin:0 0 .6rem}
+.footnotes ol{padding-left:1.3rem}
+.footnotes li{margin:.45rem 0;overflow-wrap:anywhere}
+.footnotes a{color:var(--mut)}
+
+/* ---------- footnote bottom-sheet ---------- */
+#fnsheet{position:fixed;left:0;right:0;bottom:0;z-index:70;transform:translateY(110%);
+  transition:transform .26s cubic-bezier(.22,.61,.36,1);
+  background:var(--sheet);border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;box-shadow:var(--shadow);
+  padding:1.1rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
+  max-height:60vh;overflow-y:auto}
+#fnsheet.show{transform:none}
+#fnsheet .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:-.3rem auto .7rem;cursor:pointer}
+#fnsheet .fnhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.5rem}
+#fnsheet .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.fnclose{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:36px;height:36px;border-radius:10px;font-size:1.05rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.fnclose:active{transform:scale(.92)}
+#fnsheet .body{font-size:.92rem;line-height:1.6;color:var(--fg)}
+#fnsheet .body a{color:var(--acc);word-break:break-all}
+
+/* ---------- back to top ---------- */
+.totop{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom));z-index:40;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--sheet);
+  color:var(--acc);font-size:1.25rem;cursor:pointer;box-shadow:var(--shadow);
+  opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;display:grid;place-items:center}
+.totop.show{opacity:1;visibility:visible}
+.totop:active{transform:scale(.9)}
+
+/* ---------- desktop ---------- */
+@media (min-width:1040px){
+  body{font-size:18.5px}
+  .menu-btn{display:none}
+  main{margin-left:20rem;max-width:44rem}
+  main>h1:first-child{font-size:2.1rem}
+  h2{font-size:1.5rem}
+  .drawer{transform:none;box-shadow:none;width:19rem;border-right:1px solid var(--line);
+    background:var(--bg)}
+  .drawer h2{margin-top:.6rem}
+  .scrim{display:none}
+  .topbar{padding-left:20.9rem}
+}
+@media (min-width:1040px) and (prefers-color-scheme:dark){.drawer{background:var(--bg)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="目录 / Contents">☰</button>
+  <a class="brand" href="index.html">钥匙 · KEYS <small>· Ключи</small></a>
+  <nav class="langs" id="langs">
+    <a href="zh.html" data-l="zh">中文</a>
+    <a href="en.html" data-l="en">EN</a>
+    <a href="ru.html" data-l="ru">RU</a>
+  </nav>
+</header>
+
+<aside class="drawer" id="drawer">
+  <h2>目录 · Contents</h2>
+  <nav id="TOC"><ul>
+<li><a
+href="#肽类物质哪些有效哪些是炒作哪些危险以及如何避免在灰色市场上中毒"
+id="toc-肽类物质哪些有效哪些是炒作哪些危险以及如何避免在灰色市场上中毒">肽类物质：哪些有效，哪些是炒作，哪些危险——以及如何避免在灰色市场上中毒</a>
+<ul>
+<li><a href="#核心要点只看这部分也够"
+id="toc-核心要点只看这部分也够">核心要点（只看这部分也够）</a></li>
+<li><a href="#什么是肽peptide" id="toc-什么是肽peptide">1.
+什么是肽（Peptide）</a></li>
+<li><a href="#截至2026年什么真正获得了fda批准什么没有"
+id="toc-截至2026年什么真正获得了fda批准什么没有">2.
+截至2026年，什么真正获得了FDA批准，什么没有</a></li>
+<li><a href="#各类别机制剂量益处风险" id="toc-各类别机制剂量益处风险">3.
+各类别——机制、剂量、益处、风险</a></li>
+<li><a href="#中国市场它真实的运作方式如果你在购买这是最有用的内容"
+id="toc-中国市场它真实的运作方式如果你在购买这是最有用的内容">4.
+中国市场——它真实的运作方式（如果你在购买，这是最有用的内容）</a></li>
+<li><a href="#毒性与长期风险按风险向量分析"
+id="toc-毒性与长期风险按风险向量分析">5.
+毒性与长期风险——按风险向量分析</a></li>
+<li><a href="#六个流行说法事实核查" id="toc-六个流行说法事实核查">6.
+六个流行说法——事实核查</a></li>
+<li><a href="#总结什么真正值得考虑" id="toc-总结什么真正值得考虑">7.
+总结：什么真正值得考虑</a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<main>
+<h1
+id="肽类物质哪些有效哪些是炒作哪些危险以及如何避免在灰色市场上中毒">肽类物质：哪些有效，哪些是炒作，哪些危险——以及如何避免在灰色市场上中毒</h1>
+<p><em>本综述基于我们的研究（2026年）。这不是医疗建议——而是一份地图：哪些已获批准，哪些真正经过验证，哪些是神话，以及市场的运作方式。每个人最终要结合自身情况和医生意见做出决定。</em></p>
+<hr />
+<h2 id="核心要点只看这部分也够">核心要点（只看这部分也够）</h2>
+<ol type="1">
+<li><strong>灰色肽类市场 ≈ 约90%的炒作 + 约10%的真实医学。</strong>
+真实医学主要是GLP-1（Ozempic及同类药物）和少数获批药物。其他一切都以”研究化学品，非人用”的标签销售——这是<strong>法律漏洞，不是质量保证</strong>。</li>
+<li><strong>肽是针对特定问题的工具</strong>，而不是”让自己变得更好的全能药”。有问题（肥胖、久治不愈的创伤、性欲低下、内脏脂肪）→
+有对应的肽。没有问题 → 几乎一切都落入”没必要”。</li>
+<li><strong>最大的风险不是分子本身，而是产品。</strong>
+奇异的恐惧（肽致癌）几乎全部是理论性的、来自啮齿动物的实验。而内毒素发热、非无菌注射引起的脓肿和瓶内重金属——这些是可量化的、发生在人身上的、有文献记录的真实风险。在灰色市场上，安瓿里的污物会在肽本身伤害你之前先置你于死地。</li>
+</ol>
+<hr />
+<h2 id="什么是肽peptide">1. 什么是肽（Peptide）</h2>
+<p>肽是短链氨基酸（2–50个），介于”氨基酸”和”蛋白质”之间。从生物学角度看，它们是<strong>信号分子</strong>：模拟激素或生长因子，激活体内特定受体。</p>
+<ul>
+<li><strong>注射型</strong>（大多数）——肽键在胃中断裂，因此需皮下注射（SC）或肌肉注射（IM）。</li>
+<li><strong>口服型</strong>（少数例外）——对消化稳定：MK-677（根本不是肽）、KPV（通过PepT1转运体吸收）、BPC-157（在肠道局部对胃酸稳定）。</li>
+</ul>
+<p>为何会有灰色市场：约90%生物黑客感兴趣的肽<strong>未经任何监管机构批准</strong>用于任何常规疾病。它们以”research
+/ not for human
+use”（研究用/非人用）标签销售。几乎所有”研究级”产品都在中国约3–4家工厂合成，西方”品牌”只是将同样的粉末重新分装。</p>
+<hr />
+<h2 id="截至2026年什么真正获得了fda批准什么没有">2.
+截至2026年，什么真正获得了FDA批准，什么没有</h2>
+<h3
+id="真正的药物有人类临床试验和批准">真正的药物（有人类临床试验和批准）</h3>
+<div class="line-block">药物 | 类别 | 批准适应症 |</div>
+<p>|—|—|—| | <strong>Semaglutide</strong>（司美格鲁肽）（Ozempic /
+Wegovy，2025年底起也有片剂） | GLP-1激动剂 |
+2型糖尿病（2017年），肥胖（2021年） | |
+<strong>Tirzepatide</strong>（替泽帕肽）（Mounjaro / Zepbound） | GLP-1
++ GIP | 糖尿病（2022年），肥胖（2023年），睡眠呼吸暂停（2024年） | |
+<strong>Liraglutide</strong>（利拉鲁肽） | GLP-1 | 已过时，弱于新药 | |
+<strong>Orforglipron</strong> | 口服GLP-1（非肽） |
+肥胖（2026年4月），比注射更方便，但效果弱于注射剂 | |
+<strong>Tesamorelin</strong>（替沙瑞林）（Egrifta） | GHRH类似物 |
+<strong>唯一专门对抗内脏脂肪的药物</strong>（用于HIV相关脂肪代谢障碍） |
+| <strong>Bremelanotide</strong>（布美诺肽）（Vyleesi / PT-141） |
+黑色素皮质素 | 女性性功能障碍（男性为超说明书用药） | |
+<strong>Setmelanotide</strong>（司美拉诺肽） | MC4R | 罕见遗传性肥胖 | |
+<strong>SS-31 / Elamipretide</strong>（依拉米肽） | 线粒体靶向 |
+罕见Barth综合征（试验中主要终点实际上未达成） |</p>
+<h3
+id="研究级灰色市场未获批准以研究用销售">研究级/灰色市场——未获批准（以”研究用”销售）</h3>
+<p>BPC-157、TB-500、GHK-Cu、KPV、ipamorelin（伊帕瑞林）、CJC-1295、sermorelin（舍莫瑞林）、GHRP-2/6、hexarelin（六肽）、<strong>MK-677</strong>、MOTS-c、humanin（人源素）、<strong>5-Amino-1MQ</strong>、epitalon（依皮肽龙）、thymalin（胸腺素）、thymosin-α1（胸腺素α1）、ARA-290、<strong>melanotan
+I/II</strong>（黑色素坦I/II）、PT-141（灰色瓶装）、Semax（司美克斯）、Selank（赛兰克）、<strong>Dihexa</strong>（地海克萨）等约200种化合物。</p>
+<h3
+id="又重新合法了的陷阱重要卖家常在这一点撒谎">“又重新合法了”的陷阱（重要——卖家常在这一点撒谎）</h3>
+<ul>
+<li><strong>2023年底：</strong>
+FDA将约19种流行肽（BPC-157、TB-500、GHK-Cu、KPV……）列入”第2类”——存在重大风险（杂质、免疫原性、缺乏数据）。美国药房的合法配制停止。</li>
+<li><strong>2026年2月：</strong>
+宣布<em>意向</em>将约14种从第2类恢复至第1类。但Melanotan
+II、GHRP-2/6等<strong>仍受限制</strong>。</li>
+<li><strong>2026年4月：</strong>
+正式将其从第2类移除——<strong>原因是申请撤回，而非FDA确认安全性</strong>。</li>
+<li><strong>核心：</strong>”从第2类移除”≠“可以合法配制”。这需要独立的程序，截至2026年中<strong>尚未发生</strong>。因此，“FDA批准/再次合法”的宣传是<strong>谎言</strong>。</li>
+<li><strong>GLP-1另说：</strong>
+在美国合法配制廉价Ozempic仿制品<strong>已终结</strong>（短缺已解除，法庭驳回诉讼，FDA走向永久禁止仿制品——原因：455+份剂量错误造成伤害的报告）。现在只剩品牌处方药或灰色市场。</li>
+</ul>
+<hr />
+<h2 id="各类别机制剂量益处风险">3. 各类别——机制、剂量、益处、风险</h2>
+<h3 id="大脑益智神经类">🧠 大脑（益智/神经类）</h3>
+<p>总体现实：对健康大脑的效果微弱，最佳数据来自损伤后恢复（中风、创伤），且很多是俄罗斯临床数据，缺乏西方双盲试验。</p>
+<ul>
+<li><strong>Semax</strong>（+
+N-乙酰基变体）——专注力、记忆力、神经保护。升高BDNF/NGF +
+多巴胺，不是兴奋剂。<strong>鼻腔给药</strong>，200–600
+mcg/天。作用区域：海马体、前额皮质。俄罗斯临床数据（在那里批准用于中风/认知），西方随机对照试验几乎没有。<strong>🟡
+在有一定临床历史的”纯专注”选项中表现最佳。</strong></li>
+<li><strong>Selank</strong>（+
+酰胺化变体）——抗焦虑/平静专注而不镇静。BDNF +
+GABA/脑啡肽。鼻腔给药250–900 mcg/天。<strong>🟡
+Semax+Selank组合——进入神经肽领域最合理的切入点。</strong></li>
+<li><strong>Bromantane</strong>（溴孟坦）（非肽）——平静能量 +
+抗疲劳。升高多巴胺<em>合成</em>（无反弹/崩溃）。口服50–100
+mg。<strong>🟢/🟡 被低估。</strong></li>
+<li><strong>Noopept</strong>（诺普特）——记忆/专注，BDNF，AMPA调节。口服10–30
+mg（需配合胆碱，否则头痛）。效果微弱。<strong>🟡
+便宜、口服、低风险。</strong></li>
+<li><strong>Cerebrolysin（脑活素）/
+Cortexin（科特克欣）</strong>——神经再生（中风/颅脑损伤/痴呆），神经营养因子混合物。需IM/IV疗程注射，疼痛，动物来源。<strong>在病理情况下有真实试验</strong>，健康人群无数据。<strong>🟡
+用于康复 · ⚪ 用于”变聪明”。</strong></li>
+<li><strong>Dihexa</strong>——强效突触生成（HGF/c-Met通路激动剂）。⚠️
+这是<strong>增殖性、潜在促癌通路</strong> + 人类数据为零。<strong>🟡/🔴
+高风险实验。</strong></li>
+<li><strong>P21 / PE-22-28 /
+NAP</strong>——神经发生/抗抑郁。啮齿动物数据（NAP在人体试验中失败）。<strong>⚪
+推测性。</strong></li>
+<li><strong>DSIP</strong>（δ-睡眠诱导肽）——助眠，数据薄弱
+<strong>🟡</strong>。<strong>Methylene
+blue</strong>（亚甲蓝）——大脑线粒体，⚠️
+与抗抑郁药存在危险相互作用（5-羟色胺综合征）<strong>🟡</strong>。<strong>Phenibut</strong>（苯基布）——这不是益智药，而是GABA激动剂，<strong>有依赖性和严重戒断反应</strong>
+<strong>🔴</strong>。</li>
+</ul>
+<h3 id="肌肉恢复生长激素">💪 肌肉/恢复/生长激素</h3>
+<ul>
+<li><strong>HGH（生长激素）及促泌素</strong>（ipamorelin、CJC-1295、sermorelin、GHRP-2/6、hexarelin、MK-677）。所有这些最终都会升高生长激素
+→ IGF-1（胰岛素样生长因子-1）。
+<ul>
+<li><strong>Ipamorelin</strong>——最”纯净”（不升高皮质醇、催乳素、食欲）。</li>
+<li><strong>GHRP-6</strong> = 强烈饥饿感；<strong>GHRP-2</strong> =
+皮质醇+催乳素升高；<strong>hexarelin</strong> = 皮质醇升高最多 +
+快速耐受。</li>
+<li><strong>MK-677</strong>（口服）——升高GH/IGF-1，但在2年期试验（Nass
+2008）中<strong>所有重要指标均失败</strong>：力量未改善，内脏脂肪未减少，反而+水分潴留，+血糖，+皮质醇，胰岛素敏感性下降。水肿和”脸部浮肿”就源于此。</li>
+<li><strong>该类别的诚实结论：</strong>
+促泌素的存在是为了<strong>恢复</strong>缺乏生长激素的患者和老年人的激素水平。对年轻健康人，它们会将IGF-1推向高位（参见长寿——存在争议），且<strong>没有一种能升高睾酮</strong>。</li>
+</ul></li>
+<li><strong>BPC-157</strong>——促血管生成，修复韧带/肠道。数据：所有”运动”相关的数据来自啮齿动物
++ 1篇12名患者的回顾性研究（无对照组）+
+2名患者的试验。口服用于胃肠道问题更合理。<strong>🟡
+用于特定创伤/肠道问题。</strong></li>
+<li><strong>TB-500</strong>——细胞迁移，促愈合。仅啮齿动物数据（人类随机对照试验仅有角膜）。<strong>⚪/🟡。</strong></li>
+<li><strong>GHK-Cu</strong>（铜肽）——<strong>外用（乳霜）</strong>对皮肤/胶原蛋白确实有效，有对照试验。注射/系统性用药——零数据。<strong>🟡
+作为护肤品。</strong></li>
+<li><strong>Follistatin / ACE-031 /
+肌肉生长抑素（Myostatin）阻断剂</strong>——理论上能增肌，但<strong>存在严重风险</strong>（试验中ACE-031出现出血事件）。<strong>🔴
+对业余者不推荐。</strong></li>
+</ul>
+<h3 id="脂肪代谢">🔥 脂肪/代谢</h3>
+<ul>
+<li><strong>GLP-1（semaglutide、tirzepatide、retatrutide及新药）</strong>——<strong>这是确实有效、效果强大、具有海量证据基础的类别。</strong>
+如果有人问”肽类到底有没有用”——这就是证明。对超重人群——改变人生。
+<ul>
+<li>⚠️
+主要注意事项：<strong>减少的体重中25–30%是肌肉</strong>，不只是脂肪。不配合力量训练和高蛋白摄入，体成分质量会下降。此外还有胃肠道副作用，以及停药后体重反弹。</li>
+</ul></li>
+<li><strong>Tesamorelin</strong>——唯一<strong>有证据</strong>选择性减少内脏脂肪的药物（-15–19%，体重不变）。但：数据仅来自HIV患者，约30%无应答，停药后<strong>3–6个月内效果消退</strong>，且IGF-1升高+81%。</li>
+<li><strong>SLU-PP-332、5-Amino-1MQ、MOTS-c</strong>——“运动模拟器”，理论上燃烧脂肪/修复代谢。<strong>仅啮齿动物数据，零人类数据。</strong>
+机制看起来漂亮，安全性——完全未知。<strong>⚪
+推测性实验，不可押注。</strong></li>
+</ul>
+<h3 id="长寿线粒体">⏳ 长寿/线粒体</h3>
+<ul>
+<li><strong>NAD+ / NMN /
+NR</strong>——流行，“能量与年轻”。实际上：口服剂型便宜，且与昂贵点滴的（未经证实的）效果相同。<strong>⚪
+NAD+点滴 = 主要是昂贵的安慰剂表演。</strong></li>
+<li><strong>Epitalon（依皮肽龙）、thymalin、Khavinson生物调节剂</strong>——俄罗斯老年医学，<strong>所有文献来自同一研究组，西方未能重现</strong>。炒作
+&gt;&gt; 数据。<strong>⚪。</strong></li>
+<li><strong>Thymosin-α1（胸腺素α1）、SS-31、雷帕霉素（Rapamycin）、衰老细胞清除剂（fisetin/quercetin非瑟素/槲皮素）</strong>——有真实数据，但<strong>针对患病人群</strong>（肝炎、脓毒症、特定疾病），不适用于健康人”延长寿命”。</li>
+</ul>
+<h3 id="性性欲美容">❤️ 性/性欲/美容</h3>
+<ul>
+<li><strong>PT-141（Bremelanotide，布美诺肽）</strong>——<strong>最具证据支持的性欲增强选项。</strong>
+通过大脑发挥作用（不像伟哥通过血管）。剂量1.75
+mg皮下注射，在<sub>45分钟前<strong>按需使用</strong>。副作用：恶心（</sub>40%），血压升高+心率减慢约12小时（高血压患者禁用），频繁使用可能导致<strong>面部/牙龈持续性色素沉着</strong>。每月使用限制约8次。<strong>🟡
+按需用于性生活。</strong></li>
+<li><strong>Melanotan
+II</strong>（黑色素坦II）——用于晒黑和性欲。<strong>🔴
+避免使用。</strong>
+有文献记录：黑色素瘤（melanoma）、非典型痣爆发、现有痣变深、阴茎异常勃起（priapism）、横纹肌溶解+肾衰竭、肾梗死、神经系统综合征PRES。澳大利亚自2026年2月起将其列为毒品（附表9，与海洛因同级）。对长期暴露于阳光的人尤其危险。</li>
+<li><strong>GHK-Cu（铜肽）、Argireline（精氨酸）、Matrixyl（棕榈酰五肽）等美容肽</strong>——外用对皮肤/皱纹有温和效果，风险低。<strong>🟡
+作为乳霜可以。</strong></li>
+</ul>
+<hr />
+<h2 id="中国市场它真实的运作方式如果你在购买这是最有用的内容">4.
+中国市场——它真实的运作方式（如果你在购买，这是最有用的内容）</h2>
+<p><strong>中国生产全球约68%的肽类原料。</strong>
+集中区域：江苏省（约35%，GL
+Biochem、ChinaPeptides等工厂）、浙江（约25%）、山东（约20%，廉价/批量）。2025年中国肽类进口到美国翻倍至约3.28亿美元。<strong>几乎每一个”美国品牌”都是重新分装的中国原料。</strong></p>
+<h3 id="为什么杂质是不可避免的">为什么杂质是不可避免的</h3>
+<p>肽通过SPPS（固相肽合成）方法组装——氨基酸逐一连接。每一步都会有一部分链出现缺陷：缺失残基、截短链、镜像异构体（D-型）。这些”碎片”<strong>结构上与目标分子几乎相同</strong>，因此廉价纯化无法将其去除。这才是”99%纯度”背后的真相。</p>
+<h3 id="三个质量层级">三个质量层级</h3>
+<ul>
+<li><strong>GMP制药级（约25–30%）</strong>——洁净室，全面质控。几乎买不到成品。</li>
+<li><strong>研究级（约40–45%）</strong>——大多数批次有HPLC（高效液相色谱）检测，内毒素偶尔检测。大多数体面原料属于此类。</li>
+<li><strong>低端（约25–35%）</strong>——质控最少，<strong>证书是模板填写的</strong>。污染和短量就在这里。</li>
+</ul>
+<h3
+id="coa质量证书市场上最容易造假的文件">COA（质量证书）——市场上最容易造假的文件</h3>
+<p><strong>2024年Janoshik实验室检测的肽类样品中，约43%未达到声称的纯度。</strong>
+典型造假手法： - 不同批次填写相同数字； - 可疑的整数（恰好99.0%）； -
+重复使用批号； - 修改PDF后加新卖家名称； -
+用旧检测结果冒充当前货物。</p>
+<h3 id="即使诚实的coa也不覆盖的内容">即使诚实的COA也不覆盖的内容</h3>
+<ul>
+<li><strong>内毒素（LPS，脂多糖）</strong>——细菌碎片，耐受灭菌，注射后引起发热/脓毒症。瓶子可以是<strong>无菌的，同时含有内毒素</strong>。需要单独的LAL测试。</li>
+<li><strong>无菌性</strong>——活菌/真菌 →
+脓肿（有文献记录的分枝杆菌病例）。</li>
+<li><strong>重金属</strong>——常规检测不可见。比利时专家检查：约26%的没收注射液砷/铅含量超标（砷高达10倍）。</li>
+<li><strong>溶剂（TFA三氟乙酸等工业化学品）</strong>——合成的毒性残留，纯度百分比显示不出来。</li>
+<li><strong>实际毫克量</strong>——纯度是<strong>百分比，不是重量</strong>。瓶子可以99%纯净但只含3
+mg而非声称的10
+mg（短重/“fronting”冲前量欺诈）。在590个BPC-157样品的数据集中，剂量偏差高达±85%，还发现有直接分子替换。</li>
+</ul>
+<h3 id="有经验的人如何验证">有经验的人如何验证</h3>
+<p>标准是独立实验室<strong>Janoshik（斯洛伐克）</strong>。规范：<strong>匿名直接寄送样品</strong>，卖家事先不知道结果，结果进入<strong>公开数据库</strong>（卖家无法编辑）。测试——<strong>种类不同</strong>，需根据需要选择：
+- <strong>HPLC</strong> → 纯度（%） - <strong>质谱（Mass spec）</strong>
+→ 确认是否是正确分子（防替换） - <strong>定量（Quantification/“ID and
+amount”）</strong> →
+实际毫克数（发现短重——<strong>所有人都会忘记的测试</strong>） -
+<strong>无菌 + 内毒素（LAL）</strong> → 注射安全性
+价格：HPLC约€80–150，每瓶全套约$660。</p>
+<h3 id="储存与复溶">储存与复溶</h3>
+<p>干粉（冻干品）——冰箱中可保存一到两年。用<strong>抑菌水</strong>（含苯甲醇——多次穿刺时抑制细菌）复溶，沿瓶壁缓慢注入，旋转而非摇晃，+2–8°C储存约28–30天。<strong>复溶不会对已污染的粉末起到灭菌作用。</strong></p>
+<h3 id="典型骗局">典型骗局</h3>
+<p>短重按全价收费；分子替换；假货/降解品；P图证书；不存在的实验室；“如果包裹被没收免费补发”的套路（有时是真的，有时是拿了钱后声称”包裹被没收”但根本没发货）。</p>
+<h3 id="实操框架不中毒不被骗">实操框架”不中毒、不被骗”</h3>
+<ol type="1">
+<li>每瓶货物<strong>有罪推定</strong>，直到匿名测试证明无罪。</li>
+<li>对所有货物：<strong>质谱（是什么）+ HPLC（纯度）+
+定量（几毫克）</strong>。</li>
+<li>注射用品额外加：<strong>内毒素 + 无菌检测</strong>。</li>
+<li>匿名样品 → Janoshik → 在公开数据库核实。</li>
+<li>复溶时保持清洁无菌操作。</li>
+<li><strong>如果你对注射没有经验——注射无菌操作/技术会比肽本身更早害了你。</strong></li>
+</ol>
+<hr />
+<h2 id="毒性与长期风险按风险向量分析">5.
+毒性与长期风险——按风险向量分析</h2>
+<p><strong>反直觉：产品比分子更危险。</strong></p>
+<p><strong>风险向量1——分子本身（主要是理论）：</strong> -
+<em>免疫原性</em> —
+更多来自杂质而非肽本身（FDA将肽类放入第2类时正是指出了这一点）。 -
+<em>IGF-1 → 癌症——以其被担心的方式来说是神话。</em>
+流行病学证据薄弱且因器官而异。最强信号来自肢端肥大症患者（多年来生长激素极度升高），这<strong>不是适用的模型</strong>。最纯粹的人类类比——成人生长激素替代疗法：癌症<strong>-31%（保护性效果）</strong>，不是增加。真正的注意事项范围很窄：<strong>活动性/近期癌症患者禁用</strong>（IGF-1可能”喂养”已存在的肿瘤）。
+- <em>GLP-1 → 甲状腺癌——神话。</em>
+“黑框”警告来自啮齿动物（人类C细胞上这类受体很少）。145,000人的队列研究：风险未增加。注意事项仅保留给有遗传性甲状腺癌病史（MEN2）的人。
+- <em>GLP-1 → 肌肉流失——真实存在。</em> 最真实的缺点。 - <em>Melanotan
+II → 黑色素瘤（melanoma）</em> — 有真实人类病例记录。</p>
+<p><strong>风险向量2——产品（更大的实际风险）：</strong>
+在线销售的标注”99%“纯度的semaglutide，经检验实际纯度为7.7–14.4%（Venhuis
+2024），每瓶均含内毒素阳性结果。没收的货物含溶剂、砷/铅、玻璃/橡胶颗粒。非无菌复溶
+→
+脓肿。<strong>癌症理论是5–20年后的事，且在啮齿动物身上。内毒素发热、脓肿和重金属——是这周的事，且可量化。</strong></p>
+<p><strong>风险向量3——未知的未知：</strong>
+对于BPC-157、TB-500、CJC、ipamorelin、melanotan、MK-677——<strong>零长期人类试验数据。</strong>
+即使是已批准的tesamorelin——也只有52周数据。<strong>“安全”在这里 =
+“没有数据”，而不是”经证明是安全的”。</strong></p>
+<hr />
+<h2 id="六个流行说法事实核查">6. 六个流行说法——事实核查</h2>
+<div class="line-block">说法 | 判决 | 原因 |</div>
+<p>|—|—|—| | BPC-157已获FDA批准/在人类身上证明安全 |
+<strong>已证伪</strong> | 未获批准，第2类（2023年）；人类数据几乎为零 |
+| 生长激素促泌素通过IGF-1显著升高健康人患癌风险 |
+<strong>已证伪</strong> |
+关联薄弱；肢端肥大症不是适用模型；生长激素替代疗法甚至有保护作用。注意事项：活动性癌症患者禁用
+| | 带有证书的中国瓶装产品 = 可靠的98–99%纯度和剂量 |
+<strong>已证伪</strong> | COA是最容易造假的文件；约43%不合格；短重达±85%
+| | Tesamorelin可靠地消除内脏脂肪 | <strong>部分成立</strong> |
+选择性——是的；“可靠”——否（约30%无应答，数据仅来自HIV患者，停药后反弹） |
+| GLP-1存在显著的真实甲状腺癌风险 | <strong>已证伪</strong> |
+警告来自啮齿动物；人类队列研究——风险未升高 | | Melanotan
+II用于晒黑/性欲是安全的 | <strong>已证伪</strong> |
+任何地方均未获批准；黑色素瘤、横纹肌溶解、阴茎异常勃起、PRES；澳大利亚已将其列为毒品
+|</p>
+<hr />
+<h2 id="总结什么真正值得考虑">7. 总结：什么真正值得考虑</h2>
+<p>肽在三种情况下是合理的，而不是作为”变得更好的按钮”： 1.
+<strong>有具体缺陷/疾病</strong> — 肥胖 → GLP-1；内脏脂肪 →
+tesamorelin；久治不愈的创伤 → BPC/TB-500；性欲低下 → PT-141；皮肤老化 →
+GHK-Cu乳霜。 2.
+<strong>你是处于边缘状态的运动员，有意识地承担风险</strong>（生长激素/IGF-1）——这是职业选手的游戏，不是健康之道。
+3. <strong>你是为了过程而实验</strong> — 那么每瓶都要检测。</p>
+<p><strong>真正有效的（无废话）：</strong> GLP-1（用于超重）·
+Tesamorelin（内脏脂肪）· PT-141（性欲）· GHK-Cu乳霜（皮肤，风险~零）·
+BPC/TB-500（特定创伤，前提是原料纯净）。</p>
+<p><strong>炒作/不值钱：</strong>
+MOTS-c、5-Amino-1MQ、SLU-PP-332（零人类数据）·
+epitalon、thymalin、生物调节剂 · NAD+点滴 ·
+大多数”睾酮助推剂”和”长寿堆叠”。</p>
+<p><strong>危险：</strong> Melanotan I/II（黑色素瘤，尤其在阳光下）·
+业余者使用肌肉生长抑素阻断剂 ·
+给”健康人”用生长激素（推高IGF-1，不比训练本身更能增肌，不升高睾酮）。</p>
+<p><strong>如果你健康且没有具体问题——你很可能不需要肽类。</strong>
+基础的事情（睡眠、训练、蛋白质、不吸烟）带来的收益超过一柜子安瓿。如果决定尝试——<strong>最大的风险不是分子，而是瓶里的污物</strong>：在Janoshik的匿名检测
++ 无菌操作，比选择任何”流行”肽更能保护你。</p>
+<hr />
+<p><em>编制依据：FDA/PCAC文件、ClinicalTrials、Falutz NEJM
+2007（tesamorelin替沙瑞林）、Nass Ann Intern Med
+2008（MK-677）、斯堪的纳维亚队列研究BMJ 2024（GLP-1/甲状腺）、Vilsbøll
+DOM 2026、Venhuis JMIR
+2024（灰色市场semaglutide分析）、Janoshik公开数据库、TGA
+2026（Melanotan禁令）、DermNetNZ。非医疗建议——使用前请咨询医生。</em></p>
+</main>
+
+<button class="totop" id="toTop" aria-label="Back to top">↑</button>
+
+<div id="fnsheet" role="dialog" aria-label="reference" aria-modal="true">
+  <div class="grip" id="fngrip"></div>
+  <div class="fnhead">
+    <div class="lbl" id="fnlbl">Reference</div>
+    <button class="fnclose" id="fnClose" aria-label="Close">✕</button>
+  </div>
+  <div class="body" id="fnbody"></div>
+</div>
+
+<script>
+(function(){
+  var drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),
+      menuBtn=document.getElementById('menuBtn'),toTop=document.getElementById('toTop'),
+      progress=document.getElementById('progress'),sheet=document.getElementById('fnsheet'),
+      fnbody=document.getElementById('fnbody'),fnlbl=document.getElementById('fnlbl'),
+      fnClose=document.getElementById('fnClose'),fngrip=document.getElementById('fngrip');
+  function openD(){if(drawer){drawer.classList.add('show');scrim.classList.add('show');}}
+  function closeD(){if(drawer){drawer.classList.remove('show');scrim.classList.remove('show');}}
+  if(menuBtn)menuBtn.onclick=openD; if(scrim)scrim.onclick=function(){closeD();closeSheet();};
+
+  // mark active language tab
+  var page=(location.pathname.split('/').pop()||'zh.html').replace('.html','')||'zh';
+  document.querySelectorAll('#langs a').forEach(function(a){if(a.dataset.l===page)a.classList.add('on');});
+
+  // TOC: close drawer on click (mobile)
+  if(drawer)drawer.addEventListener('click',function(e){if(e.target.tagName==='A'&&window.innerWidth<1040)closeD();});
+
+  // scroll progress + back-to-top + active toc
+  var heads=[].slice.call(document.querySelectorAll('main h2'));
+  var tocLinks=[].slice.call(document.querySelectorAll('#TOC a'));
+  function onScroll(){
+    var h=document.documentElement,st=h.scrollTop||document.body.scrollTop,
+        sh=(h.scrollHeight-h.clientHeight)||1;
+    progress.style.width=(st/sh*100)+'%';
+    toTop.classList.toggle('show',st>600);
+    // active section
+    var cur=null;
+    for(var i=0;i<heads.length;i++){if(heads[i].getBoundingClientRect().top<120)cur=heads[i];}
+    if(cur){var id=cur.id;tocLinks.forEach(function(a){
+      a.classList.toggle('active',a.getAttribute('href')==='#'+id);});}
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  toTop.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});};
+
+  // footnote bottom-sheet
+  function openSheet(){sheet.classList.add('show');if(scrim)scrim.classList.add('show');}
+  function closeSheet(){sheet.classList.remove('show');
+    if(scrim&&(!drawer||!drawer.classList.contains('show')))scrim.classList.remove('show');}
+  document.querySelectorAll('a.footnote-ref').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var id=a.getAttribute('href');if(!id||id[0]!=='#')return;
+      var li=document.querySelector(id);if(!li)return;
+      e.preventDefault();e.stopPropagation();
+      fnbody.innerHTML=li.innerHTML.replace(/<a[^>]*class="footnote-back"[^>]*>[\s\S]*?<\/a>/g,'');
+      if(fnlbl)fnlbl.textContent='Reference · '+id.replace('#fn','');
+      openSheet();
+    });
+  });
+  if(fnClose)fnClose.onclick=closeSheet;
+  if(fngrip)fngrip.onclick=closeSheet;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+  // outside-click closes (desktop, where scrim is hidden; opening tap is stopPropagation'd)
+  document.addEventListener('click',function(e){
+    if(!sheet.classList.contains('show'))return;
+    if(sheet.contains(e.target))return;
+    if(e.target.closest&&e.target.closest('a.footnote-ref'))return;
+    closeSheet();
+  });
+  // swipe-down to close sheet
+  var sy=0;sheet.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;},{passive:true});
+  sheet.addEventListener('touchmove',function(e){if(e.touches[0].clientY-sy>60)closeSheet();},{passive:true});
+})();
+</script>
+</body>
+</html>

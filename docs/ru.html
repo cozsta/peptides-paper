@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Пептиды · что работает, что опасно</title>
+<style>
+:root{
+  --bg:#fbf8f2; --bg2:#f3eee3; --fg:#23201a; --fg2:#544c3e; --mut:#8a8071;
+  --acc:#a8682a; --acc2:#c98a3e; --line:#e7ded0; --key:#fef6e6; --keyline:#e9c987;
+  --sheet:#fffdf8; --shadow:0 8px 30px rgba(60,40,10,.16);
+  --maxw:42rem;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f; --bg2:#1d1a14; --fg:#ece5d8; --fg2:#b6ac99; --mut:#8c8473;
+  --acc:#e0a85a; --acc2:#f0bd74; --line:#2e281f; --key:#221c11; --keyline:#5a4827;
+  --sheet:#1c1812; --shadow:0 10px 34px rgba(0,0,0,.5);
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:400 17.5px/1.78 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-wrap:break-word;word-break:normal;
+}
+:lang(zh) body, body:lang(zh){line-height:1.92;letter-spacing:.01em}
+
+/* ---------- progress + header ---------- */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+  background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .08s linear}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.5rem;
+  padding:max(.55rem,env(safe-area-inset-top)) .9rem .55rem;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(1.4) blur(10px);
+  border-bottom:1px solid var(--line)}
+.menu-btn{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:40px;height:40px;border-radius:11px;font-size:1.15rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.menu-btn:active{transform:scale(.94)}
+.brand{flex:1 1 auto;font-weight:700;font-size:.98rem;letter-spacing:.02em;color:var(--fg);
+  text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{color:var(--mut);font-weight:500}
+.langs{display:flex;gap:.15rem;flex:0 0 auto;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:3px}
+.langs a{font-size:.8rem;font-weight:600;color:var(--fg2);text-decoration:none;
+  padding:.28rem .5rem;border-radius:8px;line-height:1}
+.langs a.on{background:var(--acc);color:#fff}
+
+/* ---------- drawer (TOC) ---------- */
+.scrim{position:fixed;inset:0;background:rgba(20,12,0,.42);opacity:0;visibility:hidden;
+  transition:opacity .25s;z-index:55}
+.scrim.show{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(82vw,20rem);z-index:56;
+  background:var(--sheet);border-right:1px solid var(--line);box-shadow:var(--shadow);
+  transform:translateX(-102%);transition:transform .28s cubic-bezier(.22,.61,.36,1);
+  overflow-y:auto;padding:1rem 0 2rem;overscroll-behavior:contain}
+.drawer.show{transform:none}
+.drawer h2{margin:.2rem 1.1rem .6rem;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--mut);font-weight:700;border:0;padding:0}
+#TOC ul{list-style:none;margin:0;padding:0}
+#TOC li{margin:0}
+#TOC a{display:block;padding:.6rem 1.1rem;color:var(--fg2);text-decoration:none;font-size:.94rem;
+  line-height:1.35;border-left:3px solid transparent}
+#TOC a:active{background:var(--bg2)}
+#TOC a.active{color:var(--acc);border-left-color:var(--acc);background:var(--key);font-weight:600}
+
+/* ---------- main / typography ---------- */
+main{max-width:var(--maxw);margin:0 auto;padding:1.4rem 1.15rem 5rem}
+main>h1:first-child{font-size:1.7rem;line-height:1.25;letter-spacing:-.015em;margin:.6rem 0 .4rem;font-weight:800}
+h2{font-size:1.32rem;line-height:1.3;font-weight:750;letter-spacing:-.01em;
+  margin:2.9rem 0 .7rem;padding-top:1.6rem;border-top:1px solid var(--line);scroll-margin-top:64px}
+h3{font-size:1.06rem;font-weight:700;color:var(--acc);margin:1.7rem 0 .35rem;letter-spacing:.005em;scroll-margin-top:64px}
+p{margin:.78rem 0}
+a{color:var(--acc);text-decoration:underline;text-decoration-thickness:.5px;text-underline-offset:2px}
+strong{font-weight:680;color:var(--fg)}
+em{font-style:italic;color:var(--fg2)}
+hr{border:0;border-top:1px solid var(--line);margin:2.4rem 0}
+ul,ol{padding-left:1.25rem;margin:.7rem 0}
+li{margin:.34rem 0}
+blockquote{margin:1.1rem 0;padding:.5rem 0 .5rem 1.05rem;border-left:3px solid var(--acc2);
+  color:var(--fg2);font-style:italic}
+code{background:var(--bg2);padding:.1em .38em;border-radius:6px;font-size:.9em;
+  font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+
+/* ---------- KEY callout: first paragraph after each chapter h2 ---------- */
+h2 + p{position:relative;margin:1rem 0 1.3rem;padding:1rem 1.05rem 1rem 1.05rem;
+  background:var(--key);border:1px solid var(--keyline);border-radius:14px;
+  font-size:1.02rem;line-height:1.7}
+h2 + p::before{content:"🔑";position:absolute;top:-.72rem;left:.85rem;background:var(--bg);
+  padding:0 .35rem;font-size:.95rem}
+h2 + p strong:first-child{color:var(--acc);font-weight:720}
+
+/* intro "keys up front" list (after the first hr in front matter) */
+main>ul li strong{color:var(--acc)}
+
+/* ---------- footnotes ---------- */
+.footnote-ref{text-decoration:none;font-weight:700;color:var(--acc);
+  font-size:.72em;padding:0 .12em;vertical-align:super;line-height:0}
+.footnote-ref:hover{color:var(--acc2)}
+section.footnotes,.footnotes{margin-top:3.4rem;padding-top:1.2rem;border-top:2px solid var(--line);
+  font-size:.84rem;line-height:1.6;color:var(--fg2)}
+.footnotes h2{font-size:1rem;border:0;padding:0;margin:0 0 .6rem}
+.footnotes ol{padding-left:1.3rem}
+.footnotes li{margin:.45rem 0;overflow-wrap:anywhere}
+.footnotes a{color:var(--mut)}
+
+/* ---------- footnote bottom-sheet ---------- */
+#fnsheet{position:fixed;left:0;right:0;bottom:0;z-index:70;transform:translateY(110%);
+  transition:transform .26s cubic-bezier(.22,.61,.36,1);
+  background:var(--sheet);border-top:1px solid var(--line);
+  border-radius:18px 18px 0 0;box-shadow:var(--shadow);
+  padding:1.1rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
+  max-height:60vh;overflow-y:auto}
+#fnsheet.show{transform:none}
+#fnsheet .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:-.3rem auto .7rem;cursor:pointer}
+#fnsheet .fnhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.5rem}
+#fnsheet .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.fnclose{appearance:none;border:1px solid var(--line);background:var(--bg2);color:var(--fg);
+  width:36px;height:36px;border-radius:10px;font-size:1.05rem;line-height:1;cursor:pointer;
+  display:grid;place-items:center;flex:0 0 auto}
+.fnclose:active{transform:scale(.92)}
+#fnsheet .body{font-size:.92rem;line-height:1.6;color:var(--fg)}
+#fnsheet .body a{color:var(--acc);word-break:break-all}
+
+/* ---------- back to top ---------- */
+.totop{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom));z-index:40;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--sheet);
+  color:var(--acc);font-size:1.25rem;cursor:pointer;box-shadow:var(--shadow);
+  opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;display:grid;place-items:center}
+.totop.show{opacity:1;visibility:visible}
+.totop:active{transform:scale(.9)}
+
+/* ---------- desktop ---------- */
+@media (min-width:1040px){
+  body{font-size:18.5px}
+  .menu-btn{display:none}
+  main{margin-left:20rem;max-width:44rem}
+  main>h1:first-child{font-size:2.1rem}
+  h2{font-size:1.5rem}
+  .drawer{transform:none;box-shadow:none;width:19rem;border-right:1px solid var(--line);
+    background:var(--bg)}
+  .drawer h2{margin-top:.6rem}
+  .scrim{display:none}
+  .topbar{padding-left:20.9rem}
+}
+@media (min-width:1040px) and (prefers-color-scheme:dark){.drawer{background:var(--bg)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="目录 / Contents">☰</button>
+  <a class="brand" href="index.html">钥匙 · KEYS <small>· Ключи</small></a>
+  <nav class="langs" id="langs">
+    <a href="zh.html" data-l="zh">中文</a>
+    <a href="en.html" data-l="en">EN</a>
+    <a href="ru.html" data-l="ru">RU</a>
+  </nav>
+</header>
+
+<aside class="drawer" id="drawer">
+  <h2>目录 · Contents</h2>
+  <nav id="TOC"><ul>
+<li><a
+href="#пептиды-что-работает-что-хайп-что-опасно-и-как-не-отравиться-на-сером-рынке"
+id="toc-пептиды-что-работает-что-хайп-что-опасно-и-как-не-отравиться-на-сером-рынке">Пептиды:
+что работает, что хайп, что опасно — и как не отравиться на сером
+рынке</a>
+<ul>
+<li><a href="#сразу-главное-если-читать-только-это"
+id="toc-сразу-главное-если-читать-только-это">Сразу главное (если читать
+только это)</a></li>
+<li><a href="#что-такое-пептиды-вообще"
+id="toc-что-такое-пептиды-вообще">1. Что такое пептиды вообще</a></li>
+<li><a href="#что-реально-одобрено-fda-а-что-нет-на-2026"
+id="toc-что-реально-одобрено-fda-а-что-нет-на-2026">2. Что реально
+одобрено FDA, а что — нет (на 2026)</a></li>
+<li><a href="#по-классам-механизм-доза-польза-риск"
+id="toc-по-классам-механизм-доза-польза-риск">3. По классам — механизм,
+доза, польза, риск</a></li>
+<li><a
+href="#китайский-рынок-как-он-реально-устроен-самое-полезное-если-покупаешь"
+id="toc-китайский-рынок-как-он-реально-устроен-самое-полезное-если-покупаешь">4.
+Китайский рынок — как он реально устроен (самое полезное, если
+покупаешь)</a></li>
+<li><a href="#токсичность-и-долгосрок-по-векторам-риска"
+id="toc-токсичность-и-долгосрок-по-векторам-риска">5. Токсичность и
+долгосрок — по векторам риска</a></li>
+<li><a href="#шесть-популярных-утверждений-проверка-фактами"
+id="toc-шесть-популярных-утверждений-проверка-фактами">6. Шесть
+популярных утверждений — проверка фактами</a></li>
+<li><a href="#итог-кому-что-реально-стоит"
+id="toc-итог-кому-что-реально-стоит">7. Итог: кому что реально
+стоит</a></li>
+</ul></li>
+</ul></nav>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<main>
+<h1
+id="пептиды-что-работает-что-хайп-что-опасно-и-как-не-отравиться-на-сером-рынке">Пептиды:
+что работает, что хайп, что опасно — и как не отравиться на сером
+рынке</h1>
+<p><em>Обзор по нашим исследованиям (2026). Это не медицинский совет —
+это карта местности: что одобрено, что реально доказано, что миф, и как
+устроен рынок, с которого всё это едет. Дальше каждый решает сам и со
+своим врачом.</em></p>
+<hr />
+<h2 id="сразу-главное-если-читать-только-это">Сразу главное (если читать
+только это)</h2>
+<ol type="1">
+<li><strong>Серый пептидный рынок = ~90% хайпа на ~10% реальной
+медицины.</strong> Реальная медицина — это в основном GLP-1 (Ozempic и
+родня) и горстка одобренных препаратов. Всё остальное продаётся как
+«research chemical, не для людей» — это <strong>юридическая лазейка, а
+не знак качества</strong>.</li>
+<li><strong>Пептид — это инструмент под конкретную дыру</strong>, а не
+«стек, чтобы стать лучше». Есть проблема (ожирение, незаживающая травма,
+низкое либидо, висцеральный жир) → есть пептид под неё. Нет проблемы →
+почти всё попадает в «не нужно».</li>
+<li><strong>Главный риск — не молекула, а ПРОДУКТ.</strong> Экзотические
+страхи (рак от пептида) почти все теоретические и на грызунах. А вот
+эндотоксиновая лихорадка, абсцесс от нестерильной инъекции и тяжёлые
+металлы в флаконе — измеримые, человеческие, задокументированные. На
+сером рынке тебя убьёт грязь в ампуле раньше, чем сам пептид.</li>
+</ol>
+<hr />
+<h2 id="что-такое-пептиды-вообще">1. Что такое пептиды вообще</h2>
+<p>Пептид — короткая цепочка аминокислот (2–50 штук), что-то между
+«аминокислотой» и «белком». Биологически это <strong>сигнальные
+молекулы</strong>: они имитируют гормоны или факторы роста и дёргают
+конкретный рецептор в теле.</p>
+<ul>
+<li><strong>Инъекционные</strong> (большинство) — пептидные связи рвутся
+в желудке, поэтому колют под кожу (SC) или в мышцу (IM).</li>
+<li><strong>Оральные</strong> (редкие исключения) — устойчивые к
+перевариванию: MK-677 (вообще не пептид), KPV (всасывается через
+переносчик PepT1), BPC-157 (гастро-стабилен локально в кишке).</li>
+</ul>
+<p>Почему вокруг них серый рынок: ~90% интересных биохакерам пептидов
+<strong>не одобрены ни одним регулятором</strong> ни для одной
+нормальной болезни. Их продают под этикеткой «research / not for human
+use». Почти все «исследовательские» партии синтезируются на ~3–4 заводах
+в Китае, а западные «бренды» просто перефасовывают тот же порошок.</p>
+<hr />
+<h2 id="что-реально-одобрено-fda-а-что-нет-на-2026">2. Что реально
+одобрено FDA, а что — нет (на 2026)</h2>
+<h3
+id="настоящие-лекарства-есть-человеческие-клинические-испытания-одобрение">Настоящие
+лекарства (есть человеческие клинические испытания, одобрение)</h3>
+<div class="line-block">Препарат | Класс | Для чего одобрен |</div>
+<p>|—|—|—| | <strong>Semaglutide</strong> (Ozempic / Wegovy, с дек-2025
+и в таблетках) | GLP-1 агонист | диабет 2 типа (2017), ожирение (2021) |
+| <strong>Tirzepatide</strong> (Mounjaro / Zepbound) | GLP-1 + GIP |
+диабет (2022), ожирение (2023), апноэ сна (2024) | |
+<strong>Liraglutide</strong> | GLP-1 | устаревший, слабее новых | |
+<strong>Orforglipron</strong> | оральный GLP-1 (не пептид) | ожирение
+(апр-2026), удобнее уколов, но слабее | | <strong>Tesamorelin</strong>
+(Egrifta) | аналог GHRH | <strong>единственный препарат прямо против
+висцерального жира</strong> (при ВИЧ-липодистрофии) | |
+<strong>Bremelanotide</strong> (Vyleesi / PT-141) | меланокортин |
+женское расстройство либидо (мужское — off-label) | |
+<strong>Setmelanotide</strong> | MC4R | редкое генетическое ожирение | |
+<strong>SS-31 / Elamipretide</strong> | митохондриальный | редкий
+синдром Барта (главную цель в испытании, кстати, провалил) |</p>
+<h3
+id="research-gray-не-одобрены-продаются-как-для-исследований">Research /
+gray — НЕ одобрены (продаются как «для исследований»)</h3>
+<p>BPC-157, TB-500, GHK-Cu, KPV, ipamorelin, CJC-1295, sermorelin,
+GHRP-2/6, hexarelin, <strong>MK-677</strong>, MOTS-c, humanin,
+<strong>5-Amino-1MQ</strong>, epitalon, thymalin, thymosin-α1, ARA-290,
+<strong>melanotan I/II</strong>, PT-141 (серые флаконы), Semax, Selank,
+<strong>Dihexa</strong> и ещё ~200 соединений.</p>
+<h3 id="ловушка-их-снова-разрешили-важно-на-этом-врут-продавцы">Ловушка
+«их снова разрешили» (важно — на этом врут продавцы)</h3>
+<ul>
+<li><strong>Конец 2023:</strong> FDA закинул ~19 популярных пептидов
+(BPC-157, TB-500, GHK-Cu, KPV…) в «Категорию 2» — значимые риски
+(примеси, иммуногенность, нет данных). Легальное аптечное изготовление в
+США встало.</li>
+<li><strong>Февраль 2026:</strong> объявлено <em>намерение</em> вернуть
+~14 из 19 в Категорию 1. Но Melanotan II, GHRP-2/6 и др.
+<strong>остаются ограниченными</strong>.</li>
+<li><strong>Апрель 2026:</strong> их формально убрали из Категории 2 —
+<strong>из-за отзыва заявок, а не потому что FDA подтвердил
+безопасность</strong>.</li>
+<li><strong>Суть:</strong> «убрали из Кат. 2» ≠ «можно законно
+изготавливать». Для этого нужна отдельная процедура, которой к середине
+2026 <strong>не случилось</strong>. Поэтому реклама «FDA approved /
+снова легально» — <strong>ложь</strong>.</li>
+<li><strong>GLP-1 отдельно:</strong> законное «компаундинг»-изготовление
+дешёвых копий Ozempic в США <strong>умерло</strong> (дефицит закрыт,
+суды отклонили, FDA идёт к постоянному запрету копий — повод: 455+
+сообщений о вреде из-за ошибок дозировки). Остался либо брендовый
+рецепт, либо серый рынок.</li>
+</ul>
+<hr />
+<h2 id="по-классам-механизм-доза-польза-риск">3. По классам — механизм,
+доза, польза, риск</h2>
+<h3 id="мозг-ноотропы-нейро">🧠 Мозг (ноотропы / нейро)</h3>
+<p>Общая правда: эффект на здоровом мозге тонкий, лучшие данные — для
+восстановления после повреждений (инсульт, травма), и многое —
+российская клиника без западных двойных-слепых испытаний.</p>
+<ul>
+<li><strong>Semax</strong> (+ N-acetyl-варианты) — фокус, память,
+нейропротекция. Поднимает BDNF/NGF + дофамин, не стимулятор.
+<strong>Интраназально</strong>, 200–600 мкг/день. Зоны: гиппокамп,
+префронтальная кора. Российская клиника (одобрен там для
+инсульта/когниции), западных RCT почти нет. <strong>🟡 Лучший «чистый
+фокус» с какой-никакой клинической историей.</strong></li>
+<li><strong>Selank</strong> (+ amidate) — тревога/спокойный фокус без
+седации. BDNF + ГАМК/энкефалины. Интраназально 250–900 мкг/день.
+<strong>🟡 Связка Semax+Selank — самый осмысленный вход в
+нейропептиды.</strong></li>
+<li><strong>Bromantane</strong> (не пептид) — спокойная энергия +
+анти-усталость. Поднимает <em>синтез</em> дофамина (без отдачи/краша).
+Перорально 50–100 мг. <strong>🟢/🟡 Недооценён.</strong></li>
+<li><strong>Noopept</strong> — память/фокус, BDNF, модуляция AMPA.
+Перорально 10–30 мг (с холином, иначе голова болит). Эффект тонкий.
+<strong>🟡 Дёшево, орально, низкий риск.</strong></li>
+<li><strong>Cerebrolysin / Cortexin</strong> — нейрорегенерация
+(инсульт/ЧМТ/деменция), смесь нейротрофинов. Колется курсами IM/IV,
+болезненно, животный источник. <strong>Реальные испытания при
+патологии</strong>, у здорового — нет. <strong>🟡 для восстановления ·
+⚪ чтобы «поумнеть».</strong></li>
+<li><strong>Dihexa</strong> — мощнейший синаптогенез (агонист пути
+HGF/c-Met). ⚠️ Это <strong>пролиферативный, потенциально
+проканцерогенный путь</strong> + ноль данных на людях. <strong>🟡/🔴
+Рискованный эксперимент.</strong></li>
+<li><strong>P21 / PE-22-28 / NAP</strong> — нейрогенез/антидепрессант.
+Грызуны (NAP провалил испытание на людях). <strong>⚪
+Спекулятивно.</strong></li>
+<li><strong>DSIP</strong> — сон, слабые данные <strong>🟡</strong>.
+<strong>Methylene blue</strong> — митохондрии мозга, ⚠️ опасное
+взаимодействие с антидепрессантами (серотониновый синдром)
+<strong>🟡</strong>. <strong>Phenibut</strong> — это не ноотроп, а
+ГАМК-агонист с <strong>зависимостью и тяжёлой отменой</strong>
+<strong>🔴</strong>.</li>
+</ul>
+<h3 id="мышцы-восстановление-гормон-роста">💪 Мышцы / восстановление /
+гормон роста</h3>
+<ul>
+<li><strong>HGH (соматропин) и секретагоги</strong> (ipamorelin,
+CJC-1295, sermorelin, GHRP-2/6, hexarelin, MK-677). Все в итоге
+поднимают гормон роста → IGF-1.
+<ul>
+<li><strong>Ipamorelin</strong> — самый «чистый» (без кортизола,
+пролактина, голода).</li>
+<li><strong>GHRP-6</strong> = дикий голод; <strong>GHRP-2</strong> =
+кортизол+пролактин вверх; <strong>hexarelin</strong> = больше всего
+кортизола + быстрая толерантность.</li>
+<li><strong>MK-677</strong> (оральный) — поднимает GH/IGF-1, но в
+2-летнем испытании (Nass 2008) <strong>провалил всё важное</strong>:
+силу не улучшил, висцеральный жир не снизил, зато +вода, +глюкоза,
++кортизол, хуже чувствительность к инсулину. Удержание воды и «полнота
+лица» — оттуда.</li>
+<li><strong>Честный вывод по классу:</strong> секретагоги существуют
+чтобы <strong>восстанавливать</strong> гормон роста у дефицитных и
+пожилых. У здорового молодого они толкают IGF-1 вверх (см. долголетие —
+это спорно), и <strong>ни один не поднимает тестостерон</strong>.</li>
+</ul></li>
+<li><strong>BPC-157</strong> — про-ангиогенез, восстановление
+связок/кишки. Данные: грызуны для всего «спортивного» + 1 ретроспектива
+на 12 пациентах (без контроля) + пилот на 2 людях. Осмысленно скорее
+орально при проблемах с ЖКТ. <strong>🟡 при конкретной
+травме/кишке.</strong></li>
+<li><strong>TB-500</strong> — миграция клеток, заживление. Только
+грызуны (у людей RCT есть лишь для роговицы глаза).
+<strong>⚪/🟡.</strong></li>
+<li><strong>GHK-Cu</strong> — медный пептид. <strong>Топически
+(крем)</strong> — реально работает на кожу/коллаген, есть контролируемые
+испытания. Инъекционно/системно — ноль данных. <strong>🟡 как
+косметика.</strong></li>
+<li><strong>Follistatin / ACE-031 / миостатин-блокаторы</strong> —
+теоретически больше мышц, но <strong>серьёзные риски</strong>
+(кровотечения у ACE-031 в испытаниях). <strong>🔴 для
+любителя.</strong></li>
+</ul>
+<h3 id="жир-метаболизм">🔥 Жир / метаболизм</h3>
+<ul>
+<li><strong>GLP-1 (semaglutide, tirzepatide, retatrutide и
+новые)</strong> — <strong>это та категория, что реально, мощно работает
+с огромной доказательной базой.</strong> Если кто-то спрашивает «пептиды
+вообще работают?» — вот доказательство, что да. Для человека с лишним
+весом — меняют жизнь.
+<ul>
+<li>⚠️ Главный нюанс: <strong>25–30% потерянного веса — это
+мышцы</strong>, не только жир. Без силовых + белка теряешь и качество
+тела. Плюс ЖКТ-побочки, и откат после отмены.</li>
+</ul></li>
+<li><strong>Tesamorelin</strong> — единственный с
+<strong>доказанным</strong> селективным снижением висцерального жира
+(−15–19%, вес не меняется). Но: данные только при ВИЧ, ~30% не отвечают,
+эффект <strong>откатывается за 3–6 месяцев</strong> после отмены, и
+IGF-1 +81%.</li>
+<li><strong>SLU-PP-332, 5-Amino-1MQ, MOTS-c</strong> — «имитаторы
+тренировки», теоретически жгут жир/чинят метаболизм. <strong>Только
+грызуны, ноль данных на людях.</strong> Механизм красивый, безопасность
+— полная неизвестность. <strong>⚪ Спекулятивный эксперимент, не
+ставка.</strong></li>
+</ul>
+<h3 id="долголетие-митохондрии">⏳ Долголетие / митохондрии</h3>
+<ul>
+<li><strong>NAD+ / NMN / NR</strong> — модно, «энергия и молодость».
+Реально: оральные формы дёшевы и дают тот же (не)доказанный эффект, что
+дорогие капельницы. <strong>⚪ Капельницы NAD+ = в основном дорогой
+плацебо-театр.</strong></li>
+<li><strong>Epitalon, thymalin, биорегуляторы Хавинсона</strong> —
+российская геронтология, <strong>вся литература от одной группы, не
+воспроизведена на Западе</strong>. Хайп &gt;&gt; данные.
+<strong>⚪.</strong></li>
+<li><strong>Thymosin-α1, SS-31, рапамицин, сенолитики
+(fisetin/quercetin)</strong> — есть реальные данные, но <strong>для
+больных людей</strong> (гепатит, сепсис, конкретные болезни), не для
+здорового «продления жизни».</li>
+</ul>
+<h3 id="секс-либидо-косметика">❤️ Секс / либидо / косметика</h3>
+<ul>
+<li><strong>PT-141 (Bremelanotide)</strong> — <strong>лучший
+доказательный вариант для либидо.</strong> Работает через мозг (не
+сосуды, как виагра). Доза 1.75 мг под кожу за ~45 мин,
+<strong>эпизодически</strong>. Побочки: тошнота (~40%), скачок давления
++ замедление пульса на ~12 ч (нельзя при гипертонии), при частом
+применении — возможна <strong>стойкая пигментация лица/дёсен</strong>.
+Лимит ~8 доз/мес. <strong>🟡 для секса, по случаю.</strong></li>
+<li><strong>Melanotan II</strong> — для загара и либидо. <strong>🔴
+ИЗБЕГАТЬ.</strong> Задокументированы: меланома, вспышки атипичных
+родинок, потемнение существующих родинок, приапизм, разрушение мышц +
+отказ почек, инфаркт почки, неврологический синдром PRES. В Австралии с
+фев-2026 запрещён как наркотик (Schedule 9, наравне с героином).
+Особенно опасен тем, кто много на солнце.</li>
+<li><strong>GHK-Cu, Argireline, Matrixyl и пр. косметические</strong> —
+топически работают мягко на кожу/морщины, риск низкий. <strong>🟡 ок как
+крем.</strong></li>
+</ul>
+<hr />
+<h2
+id="китайский-рынок-как-он-реально-устроен-самое-полезное-если-покупаешь">4.
+Китайский рынок — как он реально устроен (самое полезное, если
+покупаешь)</h2>
+<p><strong>Китай делает ~68% мирового сырья для пептидов.</strong>
+Концентрация: провинция Цзянсу (~35%, заводы GL Biochem, ChinaPeptides),
+Чжэцзян (~25%), Шаньдун (~20%, дёшево/оптом). Импорт пептидов из Китая в
+США за 2025 удвоился до ~$328 млн. <strong>Почти каждый «американский»
+бренд — это перефасованное китайское сырьё.</strong></p>
+<h3 id="почему-примеси-неизбежны">Почему примеси НЕИЗБЕЖНЫ</h3>
+<p>Пептиды собирают методом SPPS — аминокислоты пришивают по одной. На
+каждом шаге часть цепочек получается бракованной: пропущенные звенья,
+обрезанные цепи, зеркальные изомеры. Эти «обломки» <strong>структурно
+почти идентичны нужной молекуле</strong>, поэтому дешёвая очистка их не
+убирает. Вот что на самом деле стоит за надписью «99% чистоты».</p>
+<h3 id="три-тира-качества">Три тира качества</h3>
+<ul>
+<li><strong>GMP-фарма (~25–30%)</strong> — чистые комнаты, полный
+контроль. Напрямую почти не купить.</li>
+<li><strong>Research (~40–45%)</strong> — HPLC на большинстве партий,
+эндотоксин проверяют от случая к случаю. Большинство приличного
+сырья.</li>
+<li><strong>Дешёвый тир (~25–35%)</strong> — минимум контроля,
+<strong>сертификаты шаблонные</strong>. Тут живёт контаминация и
+недовес.</li>
+</ul>
+<h3 id="сертификат-coa-самый-подделываемый-документ-на-рынке">Сертификат
+(COA) — самый подделываемый документ на рынке</h3>
+<p><strong>~43% пептидов, проверенных лабой Janoshik в 2024, не дотянули
+до заявленной чистоты.</strong> Типичный фрод: - одинаковые цифры на
+«разных» партиях; - подозрительно круглые числа (ровно 99.0%); -
+переиспользование номера партии; - пересоздание PDF под новое имя
+продавца; - старые результаты выдают за текущий товар.</p>
+<h3 id="чего-не-покрывает-даже-честный-coa">Чего НЕ покрывает даже
+честный COA</h3>
+<ul>
+<li><strong>Эндотоксин (LPS)</strong> — обломки бактерий, переживают
+стерилизацию, вызывают лихорадку/сепсис при уколе. Флакон может быть
+<strong>стерильным и при этом эндотоксин-загрязнённым</strong>. Нужен
+отдельный тест (LAL).</li>
+<li><strong>Стерильность</strong> — живые бактерии/грибок → абсцессы
+(есть задокументированные случаи Mycobacterium).</li>
+<li><strong>Тяжёлые металлы</strong> — невидимы для обычных тестов.
+Бельгийская экспертиза: ~26% изъятых инъекций с мышьяком/свинцом выше
+норм (мышьяк до ×10).</li>
+<li><strong>Растворители (TFA и пром-химия)</strong> — токсичный остаток
+синтеза, процент чистоты его не показывает.</li>
+<li><strong>Реальная масса в мг</strong> — чистота это <strong>процент,
+не количество</strong>. Флакон может быть 99% чистым и содержать 3 мг
+вместо заявленных 10 (недовес / «fronting»). На датасете из 590 образцов
+BPC-157 разброс дозы доходил до ±85%, попадалась прямая подмена
+молекулы.</li>
+</ul>
+<h3 id="как-проверяют-опытные">Как проверяют опытные</h3>
+<p>Стандарт — независимая лаба <strong>Janoshik (Словакия)</strong>.
+Дисциплина: шлёшь <strong>анонимный образец напрямую</strong>, продавец
+не видит результат заранее, результат уходит в <strong>публичную
+базу</strong> (продавец не отредактирует). Тесты — РАЗНЫЕ, заказывать
+нужные: - <strong>HPLC</strong> → чистота (%) - <strong>Mass
+spec</strong> → та ли это вообще молекула (от подмены) -
+<strong>Quantification / «ID and amount»</strong> → реальные мг (ловит
+недовес — <strong>тест, который все забывают</strong>) -
+<strong>Sterility + Endotoxin (LAL)</strong> → безопасность укола Цены:
+HPLC ~€80–150, полный набор ~$660 за флакон.</p>
+<h3 id="хранение-и-разведение">Хранение и разведение</h3>
+<p>Сухой порошок (лиофилизат) — год-два в холодильнике. Разводить
+<strong>бактериостатической водой</strong> (с бензиловым спиртом —
+тормозит бактерии при многократном проколе), лить по стенке, крутить а
+не трясти, хранить +2–8 °C ~28–30 дней. <strong>Разведение НЕ
+стерилизует</strong> уже загрязнённый порошок.</p>
+<h3 id="типичные-разводы">Типичные разводы</h3>
+<p>Недовес по полной цене; не та молекула; пустышка/деградированный
+товар; фотошоп-сертификат; несуществующие лаборатории; игры с «перешлём
+бесплатно если посылку изъяли» (иногда честно, иногда чтобы взять деньги
+за «изъятую» посылку, которую не отправляли).</p>
+<h3
+id="практический-фреймворк-не-отравиться-и-не-быть-кинутым">Практический
+фреймворк «не отравиться и не быть кинутым»</h3>
+<ol type="1">
+<li>Каждый флакон <strong>виновен, пока не оправдан</strong> анонимным
+тестом.</li>
+<li>На всё: <strong>MS (что это) + HPLC (чистота) + Quantification
+(сколько мг)</strong>.</li>
+<li>На инъекционное добавь <strong>Endotoxin + Sterility</strong>.</li>
+<li>Анонимный образец → Janoshik → проверь публичную базу.</li>
+<li>Чистая асептика при разведении.</li>
+<li><strong>Если ты не опытен в уколах — тебя отравит
+стерильность/техника раньше, чем сам пептид.</strong></li>
+</ol>
+<hr />
+<h2 id="токсичность-и-долгосрок-по-векторам-риска">5. Токсичность и
+долгосрок — по векторам риска</h2>
+<p><strong>Контринтуитивно: продукт опаснее молекулы.</strong></p>
+<p><strong>Вектор 1 — сама молекула (в основном теория):</strong> -
+<em>Иммуногенность</em> — чаще из-за примесей, чем из-за пептида (именно
+это FDA указал, отправляя пептиды в Кат. 2). - <em>IGF-1 → рак — МИФ в
+той форме, как его боятся.</em> Эпидемиология слабая и зависит от
+органа. Сильный сигнал — у больных акромегалией (запредельный гормон
+роста годами), это <strong>не та модель</strong>. Чистейший человеческий
+аналог — заместительная терапия гормоном роста у взрослых: рак
+<strong>−31% (защитный эффект)</strong>, не рост. Реальная оговорка
+узкая: <strong>нельзя при активном/недавнем раке</strong> (IGF-1 может
+кормить уже существующую опухоль). - <em>GLP-1 → рак щитовидки —
+МИФ.</em> «Чёрная рамка» предупреждения — с грызунов (у человека в
+C-клетках мало этих рецепторов). Когорта на 145 000 человек: риск не
+повышен. Оговорка остаётся только для людей с наследственным раком
+щитовидки (MEN2). - <em>GLP-1 → потеря мышц — РЕАЛЬНО.</em> Самый
+настоящий минус. - <em>Melanotan II → меланома</em> — реальные
+человеческие случаи.</p>
+<p><strong>Вектор 2 — продукт (БОЛЬШИЙ реальный риск):</strong>
+онлайн-semaglutide с этикеткой «99%» на проверке оказывался 7.7–14.4%
+(Venhuis 2024), каждый флакон — эндотоксин-положительный. Изъятый товар
+— с растворителями, мышьяком/свинцом, частицами стекла/резины.
+Нестерильное разведение → абсцесс. <strong>Раковые теории — это 5–20 лет
+и грызуны. Эндотоксиновая лихорадка, абсцесс и металлы — это на этой
+неделе и измеримо.</strong></p>
+<p><strong>Вектор 3 — неизвестное неизвестное:</strong> для BPC-157,
+TB-500, CJC, ipamorelin, melanotan, MK-677 — <strong>ноль долгосрочных
+испытаний на людях.</strong> Даже у одобренного tesamorelin — только 52
+недели. <strong>«Безопасно» здесь = «нет данных», а не «доказано, что
+безопасно».</strong></p>
+<hr />
+<h2 id="шесть-популярных-утверждений-проверка-фактами">6. Шесть
+популярных утверждений — проверка фактами</h2>
+<div class="line-block">Утверждение | Вердикт | Почему |</div>
+<p>|—|—|—| | BPC-157 одобрен FDA / доказан безопасным у людей |
+<strong>ОПРОВЕРГНУТО</strong> | Не одобрен, Кат. 2 (2023); человеческих
+данных почти ноль | | Секретагоги гормона роста заметно повышают рак у
+здоровых через IGF-1 | <strong>ОПРОВЕРГНУТО</strong> | Связь слабая;
+акромегалия — не та модель; заместительная ГР-терапия даже защитна.
+Оговорка: нельзя при активном раке | | Китайский флакон с сертификатом =
+надёжно 98–99% чистоты и дозы | <strong>ОПРОВЕРГНУТО</strong> | COA —
+самый подделываемый документ; ~43% промахов; недовес до ±85% | |
+Tesamorelin надёжно убирает висцеральный жир | <strong>ЧАСТИЧНО</strong>
+| Селективность — да; «надёжно» — нет (~30% не отвечают, данные только
+при ВИЧ, откат после отмены) | | GLP-1 = высокий реальный риск рака
+щитовидки | <strong>ОПРОВЕРГНУТО</strong> | Предупреждение с грызунов;
+человеческие когорты — без повышения риска | | Melanotan II безопасен
+для загара/либидо | <strong>ОПРОВЕРГНУТО</strong> | Нигде не одобрен;
+меланома, разрушение мышц, приапизм, PRES; в Австралии запрещён как
+наркотик |</p>
+<hr />
+<h2 id="итог-кому-что-реально-стоит">7. Итог: кому что реально
+стоит</h2>
+<p>Пептиды оправданы в трёх ситуациях, а не как «кнопка стать лучше»: 1.
+<strong>Есть конкретный дефицит/болезнь</strong> — ожирение → GLP-1;
+висцеральный жир → tesamorelin; незаживающая травма → BPC/TB-500; низкое
+либидо → PT-141; стареющая кожа → GHK-Cu крем. 2. <strong>Ты спортсмен
+на грани и сознательно берёшь риск</strong> (гормон роста / IGF) — игра
+для профи, не для здоровья. 3. <strong>Ты экспериментатор ради
+процесса</strong> — и тогда тестируешь каждый флакон.</p>
+<p><strong>Что реально работает (без воды):</strong> GLP-1 (для лишнего
+веса) · Tesamorelin (висцеральный жир) · PT-141 (либидо) · GHK-Cu крем
+(кожа, риск ~ноль) · BPC/TB-500 (конкретная травма, если сырьё
+чистое).</p>
+<p><strong>Хайп / не стоит денег:</strong> MOTS-c, 5-Amino-1MQ,
+SLU-PP-332 (ноль данных на людях) · epitalon, thymalin, биорегуляторы ·
+капельницы NAD+ · большинство «T-бустеров» и «longevity-стеков».</p>
+<p><strong>Опасно:</strong> Melanotan I/II (меланома, особенно на
+солнце) · миостатин-блокаторы для любителя · гормон роста «на здорового»
+(толкает IGF-1, мышц не строит больше тренировок, тестостерон не
+поднимает).</p>
+<p><strong>Если здоров и без конкретной проблемы — пептиды тебе, скорее
+всего, не нужны.</strong> Базовые вещи (сон, тренировки, белок, не
+курить) дают больше, чем полка ампул. А если решил пробовать —
+<strong>главный риск это не молекула, а грязь в флаконе</strong>:
+анонимный тест в Janoshik + стерильная техника спасают больше, чем любой
+выбор «модного» пептида.</p>
+<hr />
+<p><em>Составлено на основе: FDA/PCAC документы, ClinicalTrials, Falutz
+NEJM 2007 (tesamorelin), Nass Ann Intern Med 2008 (MK-677),
+скандинавская когорта BMJ 2024 (GLP-1/щитовидка), Vilsbøll DOM 2026,
+Venhuis JMIR 2024 (анализ серого semaglutide), публичная база Janoshik,
+TGA 2026 (запрет Melanotan), DermNetNZ. Не медицинский совет — перед
+применением консультируйся с врачом.</em></p>
+</main>
+
+<button class="totop" id="toTop" aria-label="Back to top">↑</button>
+
+<div id="fnsheet" role="dialog" aria-label="reference" aria-modal="true">
+  <div class="grip" id="fngrip"></div>
+  <div class="fnhead">
+    <div class="lbl" id="fnlbl">Reference</div>
+    <button class="fnclose" id="fnClose" aria-label="Close">✕</button>
+  </div>
+  <div class="body" id="fnbody"></div>
+</div>
+
+<script>
+(function(){
+  var drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),
+      menuBtn=document.getElementById('menuBtn'),toTop=document.getElementById('toTop'),
+      progress=document.getElementById('progress'),sheet=document.getElementById('fnsheet'),
+      fnbody=document.getElementById('fnbody'),fnlbl=document.getElementById('fnlbl'),
+      fnClose=document.getElementById('fnClose'),fngrip=document.getElementById('fngrip');
+  function openD(){if(drawer){drawer.classList.add('show');scrim.classList.add('show');}}
+  function closeD(){if(drawer){drawer.classList.remove('show');scrim.classList.remove('show');}}
+  if(menuBtn)menuBtn.onclick=openD; if(scrim)scrim.onclick=function(){closeD();closeSheet();};
+
+  // mark active language tab
+  var page=(location.pathname.split('/').pop()||'zh.html').replace('.html','')||'zh';
+  document.querySelectorAll('#langs a').forEach(function(a){if(a.dataset.l===page)a.classList.add('on');});
+
+  // TOC: close drawer on click (mobile)
+  if(drawer)drawer.addEventListener('click',function(e){if(e.target.tagName==='A'&&window.innerWidth<1040)closeD();});
+
+  // scroll progress + back-to-top + active toc
+  var heads=[].slice.call(document.querySelectorAll('main h2'));
+  var tocLinks=[].slice.call(document.querySelectorAll('#TOC a'));
+  function onScroll(){
+    var h=document.documentElement,st=h.scrollTop||document.body.scrollTop,
+        sh=(h.scrollHeight-h.clientHeight)||1;
+    progress.style.width=(st/sh*100)+'%';
+    toTop.classList.toggle('show',st>600);
+    // active section
+    var cur=null;
+    for(var i=0;i<heads.length;i++){if(heads[i].getBoundingClientRect().top<120)cur=heads[i];}
+    if(cur){var id=cur.id;tocLinks.forEach(function(a){
+      a.classList.toggle('active',a.getAttribute('href')==='#'+id);});}
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  toTop.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});};
+
+  // footnote bottom-sheet
+  function openSheet(){sheet.classList.add('show');if(scrim)scrim.classList.add('show');}
+  function closeSheet(){sheet.classList.remove('show');
+    if(scrim&&(!drawer||!drawer.classList.contains('show')))scrim.classList.remove('show');}
+  document.querySelectorAll('a.footnote-ref').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var id=a.getAttribute('href');if(!id||id[0]!=='#')return;
+      var li=document.querySelector(id);if(!li)return;
+      e.preventDefault();e.stopPropagation();
+      fnbody.innerHTML=li.innerHTML.replace(/<a[^>]*class="footnote-back"[^>]*>[\s\S]*?<\/a>/g,'');
+      if(fnlbl)fnlbl.textContent='Reference · '+id.replace('#fn','');
+      openSheet();
+    });
+  });
+  if(fnClose)fnClose.onclick=closeSheet;
+  if(fngrip)fngrip.onclick=closeSheet;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+  // outside-click closes (desktop, where scrim is hidden; opening tap is stopPropagation'd)
+  document.addEventListener('click',function(e){
+    if(!sheet.classList.contains('show'))return;
+    if(sheet.contains(e.target))return;
+    if(e.target.closest&&e.target.closest('a.footnote-ref'))return;
+    closeSheet();
+  });
+  // swipe-down to close sheet
+  var sy=0;sheet.addEventListener('touchstart',function(e){sy=e.touches[0].clientY;},{passive:true});
+  sheet.addEventListener('touchmove',function(e){if(e.touches[0].clientY-sy>60)closeSheet();},{passive:true});
+})();
+</script>
+</body>
+</html>
